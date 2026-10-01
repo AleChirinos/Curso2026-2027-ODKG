@@ -1,8 +1,8 @@
 Course 2026-2027-ODKG Group 6
 =============================
 Group members:
-- Numidia
-- Camille
+- Numidia Nimhaoulin (numidia17)
+- Camille Rouzaud (Marcelo Uliaduz)
 - Edgar Barrios (Eddregon)
 - Ludwig Schmidt (ludwigschdt)
 
