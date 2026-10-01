@@ -1,4 +1,4 @@
-# Group08
+# Group09
 
 ## Comment
 This is the first hands-on submission for the course *Open Data and Knowledge Graphs 2026-2027*.
