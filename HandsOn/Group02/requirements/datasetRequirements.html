@@ -100,13 +100,16 @@
     <header>
         <h1>Dataset Requirements Assessment</h1>
         <p><strong>Project Name:</strong> Personalized Chicago Park &amp; Art Explorer</p>
+        <p><strong>Datasets:</strong></p>
+        <p><a href="https://data.cityofchicago.org/Parks-Recreation/CPD_Facilities/eix4-gf83/about_data" target="_blank">Chicago Park District Facilities</a></p>
+        <p><a href="https://data.cityofchicago.org/Parks-Recreation/CPD_Park_Art/pxyq-qhyd/about_data" target="_blank">Chicago Park District Park Art</a></p>
     </header>
 
     <section style="margin-top: 30px;">
         
         <div class="req-card">
             <h2>R1. Data are in the smart cities domain <span class="badge badge-core">Satisfied</span></h2>
-            <p>The selected datasets ("Chicago Park District Facilities" and "Chicago Park District Park Art") contain information about urban infrastructure, public amenities, and cultural assets within the City of Chicago. This falls under the Smart Cities domain (specifically Urban Planning, Recreation, and Culture).</p>
+            <p>The selected datasets contain information about urban infrastructure, public amenities, and cultural assets within the City of Chicago. This falls under the Smart Cities domain (specifically Urban Planning, Recreation, and Culture).</p>
         </div>
 
         <div class="req-card">
@@ -119,7 +122,7 @@
             <p>There is an interesting legal nuance regarding these datasets:</p>
             <ul>
                 <li><b>The Data Portal:</b> The Chicago Data Portal explicitly labels these datasets as "Public Domain". The Portal's Terms of Use allow for the creation of secondary or derivative applications using the data, provided a specific disclaimer of liability is included in the application.</li>
-                <li><b>The Source Agency:</b> The dataset links to the Chicago Park District's website Terms of Use, which contain strict standard copyright restrictions ("No Content... may be copied, publicly displayed, reproduced...").</li>
+                <li><b>The Source Agency:</b> The dataset's source is the Chicago Park District's website Terms of Use, which contain strict standard copyright restrictions ("No Content... may be copied, publicly displayed, reproduced...").</li>
                 <li><b>Conclusion:</b> This strict language applies to the Park District's creative website content, not the raw factual data hosted on the City's Open Data Portal. To fully satisfy this requirement and comply with the City of Chicago's Open Data Terms of Use, we will publish the RDF data under an open license and include the mandatory City of Chicago disclaimer in our final application's footer.</li>
             </ul>
         </div>
@@ -146,7 +149,7 @@
 
         <div class="req-card">
             <h2>R5. Documentation exists for the data (Optional) <span class="badge badge-extra">Partially Satisfied</span></h2>
-            <p>While the City of Chicago provides a basic metadata portal, the official documentation is somewhat sparse. We can confirm the dataset scale and basic data types (such as <i>Point</i>, <i>Number</i>, and <i>Text</i> types) from the portal. The Facilities dataset contains 4,467 rows across 9 columns, while the Park Art dataset contains 346 rows across 11 columns. However, there is no detailed data dictionary explaining the specific categorizations used within the <code>FACILITY_N</code> (Facility Name) or <code>FACILITY_T</code> (Facility Type) columns. We will derive these categorizations directly from the CSV values during the RDF transformation process.</p>
+            <p>While the City of Chicago provides a basic metadata portal, the official documentation is somewhat sparse. For exmaple, there is no detailed data dictionary explaining the specific categorizations used within the <code>FACILITY_N</code> (Facility Name) or <code>FACILITY_T</code> (Facility Type) columns. We will derive these categorizations directly from the CSV values during the RDF transformation process.</p>
         </div>
 
         <div class="req-card">
