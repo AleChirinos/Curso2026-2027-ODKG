@@ -10,5 +10,5 @@ This is the first hands-on submission for the course *Open Data and Knowledge Gr
 | Zhanbo Fang | @breezonto |
 | Mario Fernandez Fernandez  | @MarioFdezF |
 | Tianhong Ni | @TianHong11 |
-| Zirdum Niko Kalle | |
+| Zirdum Niko Kalle | @nikozirdum |
 | Miguel Muñoz Ramos | @MiguelMunozRamos |
