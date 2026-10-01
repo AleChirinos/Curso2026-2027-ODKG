@@ -1,4 +1,4 @@
-# Group05 Members
+# Group06 Members
 - Michele Dussin - [@Duss02](https://github.com/Duss02) - **Leader**
 - Pietro Ghersetich - [@PietroGhersetich](https://github.com/PietroGhersetich)
 - Alessio Pizzini - [@AlessioPi](https://github.com/AlessioPi)
