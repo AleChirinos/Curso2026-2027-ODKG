@@ -231,7 +231,7 @@
             The <strong>Personalized Chicago Park &amp; Art Explorer</strong> is a smart city web application designed to help Chicago residents and tourists discover public parks, outdoor facilities, and public artworks tailored to their geographic location, available time, and individual interests (e.g., sports, culture, family activities, sculpture walks).
         </p>
         <p>
-            By integrating open datasets from the Chicago Park District (Facilities and Artworks) with user-generated reviews, ratings, and tags, the system generates customized spatial recommendations and time-restricted art walking itineraries.
+            By integrating open datasets from the Chicago Park District (Facilities and Artworks) with user-generated reviews, ratings, tags, and optional visitor photos, the system generates customized spatial recommendations and time-restricted art walking itineraries. 
         </p>
     </section>
 
@@ -273,8 +273,8 @@
                 </tr>
                 <tr>
                     <td><strong>FR-05</strong></td>
-                    <td>Facility &amp; Artwork Feedback (Reviews &amp; Ratings)</td>
-                    <td>Users shall be able to submit star ratings (1–5), write text comments, and assign qualitative tags (e.g., <i>family-friendly</i>, <i>well-maintained</i>, <i>crowded</i>) to specific facilities or artworks.</td>
+                    <td>Facility &amp; Artwork Feedback (Reviews, Ratings &amp; Photos)</td>
+                    <td>Users shall be able to submit star ratings (1–5), write text comments, assign qualitative tags (e.g., <i>family-friendly</i>, <i>well-maintained</i>, <i>crowded</i>), and optionally upload a photo with their review for a specific facility or artwork.</td>
                     <td><span class="badge badge-extra">App-Generated</span></td>
                 </tr>
                 <tr>
@@ -290,7 +290,7 @@
     
 
     <section>
-        <h2>4. User Interface Mockups &amp; Descriptions</h2>
+        <h2>3. User Interface Mockups &amp; Descriptions</h2>
 
         <!-- Mockup 1 -->
         <div class="mockup-wrapper">
@@ -390,8 +390,9 @@
                 </div>
                 <div class="mockup-body grid-2col">
                     <div>
-                        <div style="background:#e9ecef; height:180px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#6c757d;">
-                            [ Artwork Photo Placeholder ]
+                        <div style="background:#e9ecef; height:180px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#6c757d; text-align:center; padding:0 15px;">
+                            [ No official image available ]<br>
+                            <span style="font-size:0.8rem;">Photos are contributed by visitors through reviews.</span>
                         </div>
                         <h3>Schiller Monument</h3>
                         <p><strong>Park:</strong> Lincoln Park | <strong>Artist:</strong> Ernst Rau</p>
@@ -412,12 +413,17 @@
                                 <label>Your Review:</label>
                                 <textarea class="form-control" rows="2" placeholder="Write your comments..."></textarea>
                             </div>
+                            <div class="form-group">
+                                <label>Add a Photo <span style="font-weight:normal; color:#6c757d;">(optional)</span>:</label>
+                                <input type="file" class="form-control" accept="image/*">
+                                <small style="color:#6c757d;">Share a photo of this park or artwork to help other visitors.</small>
+                            </div>
                             <button class="btn" style="padding:6px 12px; font-size:0.85rem;">Submit Feedback</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <p><strong>Description:</strong> Enables visitors to inspect artwork and facility details, view aggregated metadata, submit star ratings, post comments, and apply qualitative tags used by the recommendation engine.</p>
+            <p><strong>Description:</strong> Enables visitors to inspect artwork and facility details, view aggregated metadata, submit star ratings, post comments, apply qualitative tags used by the recommendation engine, and optionally contribute a photo with their review. Since the source datasets do not provide park or artwork images, displayed photos are user-generated rather than dataset-provided.</p>
         </div>
     </section>
 
