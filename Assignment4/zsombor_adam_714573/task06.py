@@ -6,8 +6,8 @@
 # In[40]:
 
 
-get_ipython().system('pip install rdflib')
-get_ipython().system('pip install oeg-sw-class')
+#get_ipython().system('pip install rdflib')
+#get_ipython().system('pip install oeg-sw-class')
 
 
 # Spanish: Importar la librería RDFLib

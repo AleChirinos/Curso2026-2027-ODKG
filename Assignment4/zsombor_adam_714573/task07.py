@@ -6,8 +6,8 @@
 # In[1]:
 
 
-get_ipython().system('pip install rdflib')
-get_ipython().system('pip install oeg-sw-class')
+#get_ipython().system('pip install rdflib')
+#get_ipython().system('pip install oeg-sw-class')
 github_storage = "https://raw.githubusercontent.com/FacultadInformatica-LinkedData/Curso2026-2027-ODKG/master/Assignment4/course_materials"
 
 
