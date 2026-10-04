@@ -160,5 +160,90 @@ licensed under CC BY 4.0.</p>
      (URI domain, paths for ontology and individuals, patterns, content negotiation)
      ============================================================ -->
 
+<h2>3. Resource naming strategy</h2>
+
+<h3>3.1 URI form</h3>
+<ul>
+  <li><strong>Ontology terms: hash URIs.</strong> The ontology is small (a few classes and properties), rarely changes and is always retrieved as a whole, so a single HTTP GET on the ontology URI returns every term.</li>
+  <li><strong>Individuals: slash URIs.</strong> The dataset is large: 449,026 hourly records from 12 stations, with 6,037,812 non-empty measured values, each of which becomes an observation. Slash URIs allow every resource to be retrieved individually or in groups, without downloading the whole dataset.</li>
+</ul>
+
+<h3>3.2 Domain</h3>
+<p>All resources are published under <code>https://w3id.org/valencia-airquality/</code>. We use the w3id.org permanent identifier service so that the URIs are persistent and do not depend on the server that hosts the data: if the hosting changes, only the w3id redirection rules have to be updated, never the URIs. This domain is different from the default IRI assigned by Protégé (<code>http://www.semanticweb.org/...</code>).</p>
+
+<h3>3.3 Paths</h3>
+<table>
+  <tr><th>Resources</th><th>Path</th><th>Base URI</th></tr>
+  <tr><td>Ontology (classes and properties)</td><td><code>ontology/airquality#</code></td><td><code>https://w3id.org/valencia-airquality/ontology/airquality#</code></td></tr>
+  <tr><td>Individuals (data)</td><td><code>resource/</code></td><td><code>https://w3id.org/valencia-airquality/resource/</code></td></tr>
+</table>
+<p>Ontology terms and individuals are kept under different paths, so the ontology model is separated from its instances.</p>
+
+<h3>3.4 Patterns</h3>
+<table>
+  <tr><th>Resource</th><th>Pattern</th><th>Example</th></tr>
+  <tr><td>Class</td><td><code>https://w3id.org/valencia-airquality/ontology/airquality#[ClassName]</code></td><td><code>https://w3id.org/valencia-airquality/ontology/airquality#MonitoringStation</code></td></tr>
+  <tr><td>Property</td><td><code>https://w3id.org/valencia-airquality/ontology/airquality#[propertyName]</code></td><td><code>https://w3id.org/valencia-airquality/ontology/airquality#hasStation</code></td></tr>
+  <tr><td>Individual</td><td><code>https://w3id.org/valencia-airquality/resource/[ClassName]/[identifier]</code></td><td><code>https://w3id.org/valencia-airquality/resource/MonitoringStation/AvdaFrancia</code></td></tr>
+</table>
+<ul>
+  <li>Class names use UpperCamelCase and property names use lowerCamelCase. All terms are named in English.</li>
+  <li>Property URIs are defined directly in the ontology namespace and do not depend on any class URI (<code>#hasStation</code>, not <code>#MonitoringStation/hasStation</code>).</li>
+  <li>Individual URIs are defined under <code>resource/</code> and not derived from the class URIs of the ontology. The class name is only used as a path segment, so that individuals of different classes never share the same path.</li>
+</ul>
+
+<p>Patterns for the individuals generated from the dataset:</p>
+<table>
+  <tr><th>Class</th><th>Pattern</th><th>Example</th></tr>
+  <tr><td>MonitoringStation</td><td><code>resource/MonitoringStation/[station]</code></td><td><code>resource/MonitoringStation/PistaSilla</code></td></tr>
+  <tr><td>Observation</td><td><code>resource/Observation/[station]_[yyyyMMdd]T[HHmm]_[magnitude]</code></td><td><code>resource/Observation/AvdaFrancia_20200101T1300_NO2</code></td></tr>
+  <tr><td>ObservableProperty</td><td><code>resource/ObservableProperty/[magnitude]</code></td><td><code>resource/ObservableProperty/PM2_5</code></td></tr>
+  <tr><td>City</td><td><code>resource/City/[city]</code></td><td><code>resource/City/Valencia</code></td></tr>
+</table>
+
+<h3>3.5 Rules for building identifiers</h3>
+<ul>
+  <li><strong>[station]</strong>: the value of <code>Estación</code> without accents, spaces or punctuation, in UpperCamelCase (see table below).</li>
+  <li><strong>[yyyyMMdd]T[HHmm]</strong>: the date of <code>Fecha</code> combined with <code>Hora</code>; the hour is padded to two digits (<code>2020-01-01T00:00:00</code> + <code>13:00:00</code> &rarr; <code>20200101T1300</code>).</li>
+  <li><strong>[magnitude]</strong>: the column header; chemical formulae are kept, characters that are not valid in a URI path are replaced by <code>_</code> and Spanish names are translated into English UpperCamelCase (see table below).</li>
+  <li>No observation URI is created for an empty cell, so missing values are never represented as zeros.</li>
+  <li>Identifiers depend only on the data (station, date, hour and magnitude) and never on state information, so running the transformation again always produces the same URIs.</li>
+</ul>
+
+<table>
+  <tr><th>Estación</th><th>[station]</th><th>Estación</th><th>[station]</th></tr>
+  <tr><td>Avda. Francia</td><td><code>AvdaFrancia</code></td><td>Molí del Sol</td><td><code>MoliDelSol</code></td></tr>
+  <tr><td>Bulevard Sud</td><td><code>BulevardSud</code></td><td>Valencia Centro</td><td><code>ValenciaCentro</code></td></tr>
+  <tr><td>Consellería Meteo</td><td><code>ConselleriaMeteo</code></td><td>Puerto Valencia</td><td><code>PuertoValencia</code></td></tr>
+  <tr><td>Pista Silla</td><td><code>PistaSilla</code></td><td>Nazaret Meteo</td><td><code>NazaretMeteo</code></td></tr>
+  <tr><td>Politécnico</td><td><code>Politecnico</code></td><td>Puerto Moll Trans. Ponent</td><td><code>PuertoMollTransPonent</code></td></tr>
+  <tr><td>Viveros</td><td><code>Viveros</code></td><td>Puerto llit antic Túria</td><td><code>PuertoLlitAnticTuria</code></td></tr>
+</table>
+
+<table>
+  <tr><th>Column</th><th>[magnitude]</th><th>Column</th><th>[magnitude]</th></tr>
+  <tr><td>PM1</td><td><code>PM1</code></td><td>Dirección del viento</td><td><code>WindDirection</code></td></tr>
+  <tr><td>PM2.5</td><td><code>PM2_5</code></td><td>NH3</td><td><code>NH3</code></td></tr>
+  <tr><td>PM10</td><td><code>PM10</code></td><td>C7H8</td><td><code>C7H8</code></td></tr>
+  <tr><td>NO</td><td><code>NO</code></td><td>C6H6</td><td><code>C6H6</code></td></tr>
+  <tr><td>NO2</td><td><code>NO2</code></td><td>Ruido</td><td><code>Noise</code></td></tr>
+  <tr><td>NOx</td><td><code>NOx</code></td><td>C8H10</td><td><code>C8H10</code></td></tr>
+  <tr><td>O3</td><td><code>O3</code></td><td>Temperatura</td><td><code>Temperature</code></td></tr>
+  <tr><td>SO2</td><td><code>SO2</code></td><td>Humedad relativa</td><td><code>RelativeHumidity</code></td></tr>
+  <tr><td>CO</td><td><code>CO</code></td><td>Presión</td><td><code>Pressure</code></td></tr>
+  <tr><td>Velocidad del viento</td><td><code>WindSpeed</code></td><td>Radiación</td><td><code>SolarRadiation</code></td></tr>
+  <tr><td></td><td></td><td>Precipitación</td><td><code>Precipitation</code></td></tr>
+  <tr><td></td><td></td><td>Velocidad máxima del viento</td><td><code>MaxWindSpeed</code></td></tr>
+</table>
+
+<h3>3.6 Content negotiation</h3>
+<p>Every individual URI identifies a real-world thing (a station, an observation), not a document. When it is dereferenced, the w3id redirection rules answer with <code>303 See Other</code> and redirect according to the <code>Accept</code> header of the request:</p>
+<table>
+  <tr><th>Request</th><th>Redirected to</th></tr>
+  <tr><td><code>Accept: text/html</code></td><td><code>https://w3id.org/valencia-airquality/page/[ClassName]/[identifier]</code> (human-readable page)</td></tr>
+  <tr><td><code>Accept: text/turtle</code> or <code>application/rdf+xml</code></td><td><code>https://w3id.org/valencia-airquality/data/[ClassName]/[identifier]</code> (RDF description)</td></tr>
+</table>
+<p>The ontology URI <code>https://w3id.org/valencia-airquality/ontology/airquality</code> returns the HTML documentation of the ontology for <code>text/html</code> and the Turtle file for <code>text/turtle</code>. Because ontology terms use hash URIs, the fragment is removed by the client and the whole ontology is returned.</p>
+
 </body>
 </html>
