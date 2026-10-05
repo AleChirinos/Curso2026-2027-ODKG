@@ -598,6 +598,59 @@ The following vocabularies are considered for reuse:
     </tr>
 
     <tr>
+        <td class="border border-gray-300 px-3 py-2 align-top">Dublin Core Metadata Elements</td>
+        <td class="border border-gray-300 px-3 py-2 align-top"><code>dc:</code></td>
+        <td class="border border-gray-300 px-3 py-2 align-top">
+            Description of ontology metadata such as its creator and title.
+        </td>
+        <td class="border border-gray-300 px-3 py-2 align-top">
+            <code>dc:creator</code>,
+            <code>dc:title</code>
+        </td>
+    </tr>
+
+    <tr>
+        <td class="border border-gray-300 px-3 py-2 align-top">MOD (Metadata for Ontology Description)</td>
+        <td class="border border-gray-300 px-3 py-2 align-top"><code>mod:</code></td>
+        <td class="border border-gray-300 px-3 py-2 align-top">
+            Description of metadata about the ontology development process.
+        </td>
+        <td class="border border-gray-300 px-3 py-2 align-top">
+            <code>mod:createdWith</code>
+        </td>
+    </tr>
+
+    <tr>
+        <td class="border border-gray-300 px-3 py-2 align-top">OWL</td>
+        <td class="border border-gray-300 px-3 py-2 align-top"><code>owl:</code></td>
+        <td class="border border-gray-300 px-3 py-2 align-top">
+            Definition of the ontology, classes, properties and restrictions.
+        </td>
+        <td class="border border-gray-300 px-3 py-2 align-top">
+            <code>owl:Ontology</code>,
+            <code>owl:Class</code>,
+            <code>owl:ObjectProperty</code>,
+            <code>owl:DatatypeProperty</code>,
+            <code>owl:Restriction</code>,
+            <code>owl:versionInfo</code>
+        </td>
+    </tr>
+
+    <tr>
+        <td class="border border-gray-300 px-3 py-2 align-top">RDF Schema</td>
+        <td class="border border-gray-300 px-3 py-2 align-top"><code>rdfs:</code></td>
+        <td class="border border-gray-300 px-3 py-2 align-top">
+            Definition of labels, class hierarchies, domains and ranges.
+        </td>
+        <td class="border border-gray-300 px-3 py-2 align-top">
+            <code>rdfs:label</code>,
+            <code>rdfs:subClassOf</code>,
+            <code>rdfs:domain</code>,
+            <code>rdfs:range</code>
+        </td>
+    </tr>
+
+    <tr>
         <td class="border border-gray-300 px-3 py-2 align-top">XML Schema Datatypes</td>
         <td class="border border-gray-300 px-3 py-2 align-top"><code>xsd:</code></td>
         <td class="border border-gray-300 px-3 py-2 align-top">
@@ -611,6 +664,13 @@ The following vocabularies are considered for reuse:
         </td>
     </tr>
 </table></div>
+
+<p class="text-gray-700 leading-relaxed mb-4">
+In addition to vocabularies used to model the domain data, the ontology also
+reuses Dublin Core and MOD for ontology metadata, OWL for the formal definition
+of classes, properties and restrictions, and RDFS for labels, subclass
+relationships, domains and ranges.
+</p>
 
 
 <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-3">3.7. Hybrid ontology conceptualization</h3>
