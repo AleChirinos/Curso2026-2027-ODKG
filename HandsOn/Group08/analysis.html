@@ -64,7 +64,7 @@
 <table>
   <tr><th>Column</th><th>Type</th><th>Comments and range</th><th>Problems</th></tr>
   <tr><td><code>register_id</code></td><td>integer</td><td>550 distinct values, 69133728 to 99400787917</td><td>U+FEFF at the start of all 550 values; see 1.4</td></tr>
-  <tr><td><code>name</code></td><td>string</td><td>474 distinct values in 550 records, length 4 to 66</td><td>none</td></tr>
+  <tr><td><code>name</code></td><td>string</td><td>474 distinct values in 550 records, length 4 to 66</td><td>11 generic names repeated in 87 records (for example <em>Piscina Coberta</em>, 17 records); see 1.4</td></tr>
   <tr><td><code>institution_id</code>, <code>institution_name</code></td><td>integer / string</td><td>98 distinct institutions</td><td>blank together in 440 (80.0%)</td></tr>
   <tr><td><code>created</code>, <code>modified</code></td><td>datetime (ISO 8601, UTC offset)</td><td>created 1984-05-29 to 2026-09-22; modified 2025-05-09 to 2026-09-29 (UTC)</td><td>see 1.4</td></tr>
   <tr><td><code>addresses_roadtype_id</code>, <code>addresses_roadtype_name</code>, <code>addresses_type</code>, <code>values_description</code></td><td>none (empty)</td><td>-</td><td>empty in all 550 records; see 1.4</td></tr>
@@ -109,7 +109,7 @@
 
 <h3>1.3 Cross-dataset analysis</h3>
 <ul>
-  <li><strong>Join keys.</strong> The 10 district codes and 73 neighbourhood codes are the same in D1, D2 and D3, and every neighbourhood belongs to the same district in the three datasets. The datasets are joined on codes, never on names.</li>
+  <li><strong>Join keys.</strong> The 10 district codes and 73 neighbourhood codes are the same in D1, D2 and D3, and every neighbourhood belongs to the same district in the three datasets, except in 5 fountain records (see 1.4). The datasets are joined on codes, never on names.</li>
   <li><strong>Names.</strong> D3 writes the area names in upper case; D2 abbreviates Sants, Sarri&#224;, Horta; and neighbourhood 13 is la Marina de Port in D1 and D2 but LA MARINA DEL PORT in D3. Area labels should come from one source.</li>
   <li><strong>Identifiers.</strong> The formats do not overlap (D1 integers of 8 to 11 digits, D2 <code>NN-NNN</code>, D3 seven digits followed by <code>AR</code>) and no value occurs in two datasets.</li>
   <li><strong>Coordinates.</strong> The datasets cover the same area (latitude 41.345 to 41.467, longitude 2.089 to 2.228): 550 of 550 shelters and 1,748 of 1,760 fountains lie inside the extent of the tree file. Converting latitude and longitude to EPSG:25831 with pyproj 3.8.0 reproduces the X and Y columns to within 0.008 m. D2 and D3 do not state the system of latitude and longitude, so WGS84 is an assumption.</li>
@@ -122,27 +122,289 @@
   <tr><td>1</td><td>Hidden character U+FEFF: 560 characters in 558 cells of D1 (550 <code>register_id</code>, 1 <code>values_value</code>, 7 <code>timetable</code> cells with 9 characters) and one at the start of the D2 header.</td><td>Strip it from every cell and read D2 as <code>utf-8-sig</code> before building URIs; otherwise each shelter URI contains <code>%EF%BB%BF</code> and the D2 header is not found by name.</td></tr>
   <tr><td>2</td><td>Empty columns and placeholders (blank counts in 1.2). D1: 4 empty columns, <code>0</code> and <code>9999</code> as start street number, truncated postal code <code>080</code>. D2: <code>NOM</code> blank or <code>-</code>. D3: <code>-</code> as common name and <code>SENSE INFORMAR</code> as irrigation type.</td><td>Drop the empty columns. Treat blank, <code>-</code>, <code>SENSE INFORMAR</code>, 0, 9999 and the truncated postal code as missing: no triple is generated for them, never an empty literal.</td></tr>
   <tr><td>3</td><td>Codes that look like numbers: D2 <code>CODI</code> (<code>01-004</code>), D3 <code>codi</code> (<code>0000423AR</code>) and D2 <code>NUMERO_CARRER</code> (<code>20-10</code>, <code>20.I</code>).</td><td>Keep them as strings and build URIs from identifiers, never from names.</td></tr>
-  <tr><td>4</td><td>Values to split or normalise. <code>FRE&#192;TICA / POTABLE</code> (1,874 records in <code>tipus_aigua</code>) holds two irrigation types; <code>espai_verd</code> has 1,231 values with spaces at the ends; the D1 town is written Barcelona (468) or BARCELONA (82).</td><td>Split the composite value, trim the spaces and normalise the spelling before generating the triples.</td></tr>
-  <tr><td>5</td><td>Implausible planting dates. 8 dates have a year between 13 and 36 (<code>0013-04-22</code>, <code>0013-05-10</code>, ...); adding 2000 would give a year after 2026 for 3 of them. The valid dates run from 2001-01-01 to 2026-09-30.</td><td>Omit dates before 1950: <code>xsd:date</code> accepts the year 0013, so type validation does not detect them.</td></tr>
-  <tr><td>6</td><td>Duplicated species id. <code>Ulmus minor &#x27;Umbraculifera&#x27;</code> has two ids (589 and 2764); the other 287 names have one. 77 names carry a cultivar name in quotes. Hybrids are written with the sign U+00D7 in 8 names and with a letter x in 13.</td><td>The two ids get a single species URI, built from the lower id (589), in the data preparation (see section 3); hybrid names need normalising before linking to Wikidata.</td></tr>
+  <tr><td>4</td><td>Values to split or normalise. <code>FRE&#192;TICA / POTABLE</code> (1,874 records in <code>tipus_aigua</code>) holds two irrigation types; <code>espai_verd</code> has 1,231 values with spaces at the ends; the D1 town is written Barcelona (468) or BARCELONA (82); 30 road ids of D1 are written with two names (<em>C Gran de Sant Andreu</em> and <em>Carrer Gran de Sant Andreu</em>); 59 Spanish and 47 Catalan common names of species hold two names separated by a semicolon (<code>Pi pinyoner; pi pinyer</code>).</td><td>Split the composite value, trim the spaces and normalise the spelling before generating the triples, with one name per road id.</td></tr>
+  <tr><td>5</td><td>Implausible planting dates. 8 dates have a year between 13 and 36 (<code>0013-04-22</code>, <code>0013-05-10</code>, ...); adding 2000 would give a year after 2026 for 3 of them. The valid dates run from 2001-01-01 to 2026-09-30.</td><td>Omit dates before 1950: the year 0013 is a valid date, so type validation does not detect them. The dates are written as <code>xsd:dateTime</code> with the time 00:00:00, because <code>xsd:date</code> is not in the OWL 2 datatype map.</td></tr>
+  <tr><td>6</td><td>Duplicated species id. <code>Ulmus minor &#x27;Umbraculifera&#x27;</code> has two ids (589 and 2764); the other 287 names have one. 77 names carry a cultivar name in quotes. Other names are not plain species either: 1 variety, 2 forms, 2 subspecies, 2 colour variants (<em>Nerium oleander</em> (blanc) and (vermell)) and 1 genus without species (<em>Washingtonia</em> sp). Hybrids are written with the sign U+00D7 in 8 names and with a letter x in 15: 13 with the x between the genus and the species, and 2 intergeneric hybrids that start with X (<em>X chitalpa tashkentensis</em> and <em>X hesperotropsis leylandii</em>).</td><td>The two ids get a single species URI, built from the lower id (589), in the data preparation (see section 3); hybrid names need normalising before linking to Wikidata, and only entries at species level are linked with <code>owl:sameAs</code> (see 3.4).</td></tr>
   <tr><td>7</td><td>Backslash in addresses: 96,346 values of <code>adreca</code> (66.4%) contain one, for example <code>C\ Doctor Pi i Molist, 117</code>.</td><td>In Turtle a backslash inside a string literal is written <code>\\</code>: serialise with a library that escapes it.</td></tr>
   <tr><td>8</td><td>Missing or contradictory area links (blank counts in 1.2). In D2, 5 records have a district that is not the usual one of their neighbourhood (neighbourhoods <code>18</code>, <code>19</code>, <code>29</code>, <code>37</code>). In D3, the 4 records without district are <code>0286581AR</code>, <code>0337504AR</code>, <code>0337507AR</code>, <code>0345745AR</code>. In D1 and D3 each neighbourhood belongs to one district. The 10 fountains of D2 and the 4 trees of D3 that have no neighbourhood do have a district.</td><td>Link on the neighbourhood code and derive the district from the neighbourhood. No link when the code is blank, and no area with an empty code. These 14 records get no area link although their district is known: the loss (14 of 147,344 records) is accepted.</td></tr>
-  <tr><td>9</td><td><code>geom</code> is in ETRS89 (EPSG:25831), not in latitude and longitude.</td><td>A <code>geo:wktLiteral</code> without a CRS IRI is read as WGS84 longitude and latitude: write the EPSG:25831 IRI in the literal or build the point from longitude and latitude.</td></tr>
-  <tr><td>10</td><td>Contacts and opening hours in D1. <code>values_*</code> holds at most one key-value pair per record (538 records): e-mail 336, web 135, telephone 26, free text with HTML 31, 10 other. <code>timetable</code> is an HTML table in all 486 non-blank values (433 with <code>&amp;nbsp;</code>, 27 with a carriage return, 5 with editor residue).</td><td>Choose the property by <code>values_attribute_name</code>. Keep <code>timetable</code> as an <code>rdf:HTML</code> literal, parse it or leave it out (group decision), after removing the residue and escaping quotes and line breaks.</td></tr>
-  <tr><td>11</td><td>No shelter type and repeated places in D1. No column states the type of shelter; 34 names start with <em>Refugi clim</em> (33 with an institution). 54 records in 25 groups share coordinates and 94 records in 43 groups share street and number.</td><td>The category can only be derived approximately from the name, as planned in Hands-on 1 (requirement FR3), and must be marked as derived. Records are not merged into facilities; duplicates are handled when counting.</td></tr>
+  <tr><td>9</td><td><code>geom</code> is in ETRS89 (EPSG:25831), not in latitude and longitude.</td><td>A GeoSPARQL <code>wktLiteral</code> without a CRS IRI is read as WGS84 longitude and latitude: write the EPSG:25831 IRI in the literal or build the point from longitude and latitude.</td></tr>
+  <tr><td>10</td><td>Contacts and opening hours in D1. <code>values_*</code> holds at most one key-value pair per record (538 records): e-mail 336, web 135, telephone 26, free text with HTML 31, 10 other. Telephone numbers are written with spaces in 4 cases, and 8 are the short number <code>010</code>. <code>timetable</code> is an HTML table in all 486 non-blank values (433 with <code>&amp;nbsp;</code>, 27 with a carriage return, 5 with editor residue (a <code>ql-cursor</code> span), 11 with inline <code>&lt;span style&gt;</code> formatting).</td><td>Choose the property by <code>values_attribute_name</code>, and keep telephone numbers as text. Keep <code>timetable</code> as an <code>rdf:HTML</code> literal, parse it or leave it out (group decision), after removing the editor residue and the inline formatting and escaping quotes and line breaks.</td></tr>
+  <tr><td>11</td><td>No shelter type and repeated places in D1. No column states the type of shelter; 34 names start with <em>Refugi clim</em> (33 with an institution). 54 records in 25 groups share coordinates and 94 records in 43 groups share street and number. 11 generic names are repeated in 87 records (<em>Piscina Coberta</em> 17, <em>Piscines Cobertes</em> 16, <em>Refugi clim&agrave;tic</em> 12, ...), and all 87 have a host institution.</td><td>The category can only be derived approximately from the name, as planned in Hands-on 1 (requirement FR3), and must be marked as derived. Records are not merged into facilities; duplicates are handled when counting. A repeated name is shown with the name of its host institution, which tells the records apart.</td></tr>
   <tr><td>12</td><td><code>created</code> is before 21 July 2021, the first publication of the dataset on the portal, in 420 of 550 records; <code>1984-05-30T00:00:00+02:00</code> repeats in 19 records.</td><td>It is most probably the creation of the record in the source system (inferred), not of the shelter: do not map it to an opening date. If kept, it is <code>xsd:dateTime</code> with its offset.</td></tr>
 </table>
+
+<h3>1.5 Conceptual schema of the data</h3>
+<p>None of the sources publishes a conceptual schema of its data (D2 and D3 only describe their columns, see 1.1), so Figure 1 draws the concepts and relationships found in the three files as a UML class diagram of the source data, not of the ontology. The attributes are the source columns, grouped, without the four columns of D1 that are always empty; the multiplicities come from the counts in 1.2 and the links in 1.3.</p>
+<figure style="margin:1rem 0">
+<svg viewBox="0 0 960 540" width="100%" role="img" aria-labelledby="schema-title" style="height:auto;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:12px">
+  <title id="schema-title">Conceptual schema of the climate shelters, drinking fountains and street trees datasets</title>
+  <defs><style>
+    .box { fill: var(--soft); stroke: #8a96a3; stroke-width: 1; }
+    .sep { stroke: #8a96a3; stroke-width: 1; }
+    .hd { font-weight: 600; fill: var(--fg); }
+    .at { fill: var(--fg); }
+    .ln { stroke: #5f6c7b; stroke-width: 1.2; fill: none; }
+    .m { fill: var(--muted); font-size: 11px; }
+    .rl { fill: var(--accent); font-size: 11px; font-style: italic; }
+  </style></defs>
+
+  <!-- D1: climate shelter record -->
+  <rect class="box" x="20" y="20" width="290" height="152"/>
+  <text class="hd" x="30" y="37">Climate shelter record (D1)</text>
+  <line class="sep" x1="20" y1="44" x2="310" y2="44"/>
+  <text class="at" x="30" y="59">register_id : integer {key}</text>
+  <text class="at" x="30" y="74">name : string</text>
+  <text class="at" x="30" y="89">created, modified : datetime</text>
+  <text class="at" x="30" y="104">road_id, road_name : string</text>
+  <text class="at" x="30" y="119">numbers, zip_code, town, main_address</text>
+  <text class="at" x="30" y="134">X, Y (EPSG:25831) : decimal</text>
+  <text class="at" x="30" y="149">lat, lon (EPSG:4326) : decimal</text>
+  <text class="at" x="30" y="164">timetable : HTML table</text>
+
+  <!-- D2: drinking fountain -->
+  <rect class="box" x="335" y="20" width="290" height="109"/>
+  <text class="hd" x="345" y="37">Drinking fountain (D2)</text>
+  <line class="sep" x1="335" y1="44" x2="625" y2="44"/>
+  <text class="at" x="345" y="59">CODI : string {key}</text>
+  <text class="at" x="345" y="74">NOM : string</text>
+  <text class="at" x="345" y="89">CARRER, NUMERO_CARRER : string</text>
+  <text class="at" x="345" y="104">X_ETRS89, Y_ETRS89 : decimal</text>
+  <text class="at" x="345" y="119">LATITUD, LONGITUD : decimal</text>
+
+  <!-- D3: street tree -->
+  <rect class="box" x="650" y="20" width="290" height="152"/>
+  <text class="hd" x="660" y="37">Street tree (D3)</text>
+  <line class="sep" x1="650" y1="44" x2="940" y2="44"/>
+  <text class="at" x="660" y="59">codi : string {key}</text>
+  <text class="at" x="660" y="74">tipus_element, categoria_arbrat</text>
+  <text class="at" x="660" y="89">data_plantacio : date</text>
+  <text class="at" x="660" y="104">tipus_aigua, tipus_reg : string</text>
+  <text class="at" x="660" y="119">espai_verd, catalogacio : string</text>
+  <text class="at" x="660" y="134">adreca : string</text>
+  <text class="at" x="660" y="149">x_etrs89, y_etrs89, geom (WKT)</text>
+  <text class="at" x="660" y="164">latitud, longitud : decimal</text>
+
+  <!-- D1: host institution -->
+  <rect class="box" x="20" y="222" width="260" height="64"/>
+  <text class="hd" x="30" y="239">Host institution (D1)</text>
+  <line class="sep" x1="20" y1="246" x2="280" y2="246"/>
+  <text class="at" x="30" y="261">institution_id : integer {key}</text>
+  <text class="at" x="30" y="276">institution_name : string</text>
+
+  <!-- D1: attribute value (contacts, texts and other key-value pairs) -->
+  <rect class="box" x="20" y="316" width="260" height="124"/>
+  <text class="hd" x="30" y="333">Attribute value (D1)</text>
+  <line class="sep" x1="20" y1="340" x2="280" y2="340"/>
+  <text class="at" x="30" y="355">values_id : integer {key}</text>
+  <text class="at" x="30" y="370">values_attribute_id : integer</text>
+  <text class="at" x="30" y="385">values_attribute_name : string</text>
+  <text class="at" x="30" y="400">values_value : string</text>
+  <text class="at" x="30" y="415">values_category : string</text>
+  <text class="at" x="30" y="430">values_outstanding : boolean</text>
+
+  <!-- D3: species -->
+  <rect class="box" x="690" y="222" width="250" height="79"/>
+  <text class="hd" x="700" y="239">Species (D3)</text>
+  <line class="sep" x1="690" y1="246" x2="940" y2="246"/>
+  <text class="at" x="700" y="261">cat_especie_id : integer {key}</text>
+  <text class="at" x="700" y="276">cat_nom_cientific : string</text>
+  <text class="at" x="700" y="291">cat_nom_castella, cat_nom_catala</text>
+
+  <!-- shared areas -->
+  <rect class="box" x="335" y="330" width="290" height="64"/>
+  <text class="hd" x="345" y="347">Neighbourhood (D1, D2, D3)</text>
+  <line class="sep" x1="335" y1="354" x2="625" y2="354"/>
+  <text class="at" x="345" y="369">code : two-digit string {key}</text>
+  <text class="at" x="345" y="384">name : string</text>
+
+  <rect class="box" x="335" y="454" width="290" height="64"/>
+  <text class="hd" x="345" y="471">District (D1, D2, D3)</text>
+  <line class="sep" x1="335" y1="478" x2="625" y2="478"/>
+  <text class="at" x="345" y="493">code : two-digit string {key}</text>
+  <text class="at" x="345" y="508">name : string</text>
+
+  <!-- relationships -->
+  <line class="ln" x1="150" y1="172" x2="150" y2="222"/>
+  <text class="m" x="140" y="186" text-anchor="end">*</text>
+  <text class="m" x="140" y="217" text-anchor="end">0..1</text>
+  <text class="rl" x="158" y="202">hosted by</text>
+
+  <polyline class="ln" points="295,172 295,352 280,352"/>
+  <text class="m" x="301" y="186">1</text>
+  <text class="m" x="301" y="346">0..1</text>
+  <text class="rl" x="301" y="262">has value</text>
+
+  <line class="ln" x1="310" y1="150" x2="420" y2="330"/>
+  <text class="m" x="322" y="160">*</text>
+  <text class="m" x="404" y="318" text-anchor="end">1</text>
+
+  <line class="ln" x1="480" y1="129" x2="480" y2="330"/>
+  <text class="m" x="486" y="143">*</text>
+  <text class="m" x="486" y="322">0..1</text>
+  <text class="rl" x="486" y="232">located in</text>
+
+  <line class="ln" x1="660" y1="172" x2="560" y2="330"/>
+  <text class="m" x="648" y="190" text-anchor="end">*</text>
+  <text class="m" x="584" y="318">0..1</text>
+
+  <line class="ln" x1="815" y1="172" x2="815" y2="222"/>
+  <text class="m" x="821" y="186">*</text>
+  <text class="m" x="821" y="217">1</text>
+  <text class="rl" x="809" y="202" text-anchor="end">has species</text>
+
+  <line class="ln" x1="480" y1="394" x2="480" y2="454"/>
+  <text class="m" x="486" y="408">*</text>
+  <text class="m" x="486" y="448">1</text>
+  <text class="rl" x="486" y="428">part of</text>
+
+  <text class="m" x="640" y="478">The neighbourhood and district codes are</text>
+  <text class="m" x="640" y="493">shared by the three datasets. Each record</text>
+  <text class="m" x="640" y="508">also has a district code, except 4 trees (1.4).</text>
+</svg>
+<figcaption class="sub">Figure 1. Concepts and relationships of D1, D2 and D3 as UML classes; {key} marks the unique identifier of each concept.</figcaption>
+</figure>
 
 <h2 id="licensing">2. Licensing analysis</h2>
 
 <h3>2.1 Publisher and rightsholder</h3>
-<!-- INSERT 2.1 -->
+<p>
+  The three datasets are published on
+  <a href="https://opendata-ajuntament.barcelona.cat/en/">Open Data BCN</a>,
+  the open data portal of the Ajuntament de Barcelona (Barcelona City Council).
+  The publisher of all three datasets is therefore the Ajuntament de Barcelona,
+  through Open Data BCN. The "Source" field shown on each dataset page, which
+  indicates the origin of the data, is reported below.
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>Dataset</th>
+      <th>Publisher</th>
+      <th>"Source" field on the dataset page</th>
+      <th>Rightsholder / licensor</th>
+      <th>Dataset page</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>D1 Climate shelters</td>
+      <td>Open Data BCN (Ajuntament de Barcelona)</td>
+      <td>Ajuntament de Barcelona</td>
+      <td>Ajuntament de Barcelona</td>
+      <td><a href="https://opendata-ajuntament.barcelona.cat/data/dataset/xarxa-refugis-climatics">Climate shelters network in the city of Barcelona</a></td>
+    </tr>
+    <tr>
+      <td>D2 Drinking fountains</td>
+      <td>Open Data BCN (Ajuntament de Barcelona)</td>
+      <td>Cicle de l'Aigua</td>
+      <td>Ajuntament de Barcelona</td>
+      <td><a href="https://opendata-ajuntament.barcelona.cat/data/en/dataset/fonts">Drinking fountains of the city of Barcelona</a></td>
+    </tr>
+    <tr>
+      <td>D3 Street trees</td>
+      <td>Open Data BCN (Ajuntament de Barcelona)</td>
+      <td>Aplicatiu de gesti&oacute; municipal</td>
+      <td>Ajuntament de Barcelona</td>
+      <td><a href="https://opendata-ajuntament.barcelona.cat/data/dataset/arbrat-viari">Street trees of the city of Barcelona</a></td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  The rightsholder is the entity that releases the data under the licence declared on
+  each dataset page (see section 2.2). Since the datasets are released through the
+  portal of the Ajuntament de Barcelona, we identify the Ajuntament de Barcelona as the
+  licensor to be credited when the data is reused.
+</p>
+<p>
+  <strong>Distributors.</strong> The three datasets are also listed in the Spanish national catalogue datos.gob.es
+  (<a href="https://datos.gob.es/catalogo/l01080193-red-de-refugios-climaticos-en-la-ciudad-de-barcelona">D1</a>,
+  <a href="https://datos.gob.es/catalogo/l01080193-fuentes-de-beber-de-la-ciudad-de-barcelona">D2</a>,
+  <a href="https://datos.gob.es/catalogo/l01080193-arbolado-viario-de-la-ciudad-de-barcelona">D3</a>).
+  datos.gob.es is only a distributor, so the licence is analysed at the source.
+</p>
 
 <h3>2.2 Licence of the original datasets</h3>
-<!-- INSERT 2.2 -->
+<p>
+  The dataset pages of D1, D2 and D3 declare the same licence:
+  <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International (CC BY 4.0)</a>
+</p>
+<table>
+  <thead>
+    <tr><th>Dataset</th><th>Source licence</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>D1 Climate shelters</td><td>CC BY 4.0</td></tr>
+    <tr><td>D2 Drinking fountains</td><td>CC BY 4.0</td></tr>
+    <tr><td>D3 Street trees</td><td>CC BY 4.0</td></tr>
+  </tbody>
+</table>
+<p>
+  <strong>All copies and formats.</strong> The licence is declared for the whole dataset on the dataset page, so it covers every resource
+  listed there: 2 for D1 (CSV and JSON), 10 for D2 (the yearly files; the 2016 structure differs from the later ones) and 96 for D3
+  (CSV, JSON and the quarterly historical files).
+</p>
+<p>The licence grants the following freedoms:</p>
+<ul>
+  <li><strong>Share:</strong> copy and redistribute the material in any medium or format,
+      for any purpose, even commercially.</li>
+  <li><strong>Adapt:</strong> remix, transform and build upon the material,
+      for any purpose, even commercially.</li>
+  <li>The licensor cannot revoke these freedoms as long as the licence terms are followed.</li>
+</ul>
+<p>Under the following terms:</p>
+<ul>
+  <li><strong>Attribution:</strong> appropriate credit must be given, a link to the licence
+      must be provided, and it must be indicated if changes were made. This can be done in
+      any reasonable manner, but not in a way that suggests that the licensor endorses
+      the reuser or the use.</li>
+  <li><strong>No additional restrictions:</strong> legal terms or technological measures that
+      legally restrict others from doing anything the licence permits cannot be applied.</li>
+</ul>
+<p>The licence also includes the following notices:</p>
+<ul>
+  <li>Compliance is not required for elements of the material that are in the public domain,
+      or where the use is permitted by an applicable exception or limitation.</li>
+  <li>No warranties are given. The licence may not give all the permissions necessary for an
+      intended use; other rights, such as publicity, privacy or moral rights, may limit how
+      the material is used.</li>
+</ul>
 
 <h3>2.3 Licence of the generated dataset</h3>
-<!-- INSERT 2.3 -->
+<p>
+  The generated dataset is the RDF (Linked Data) version of D1, D2 and D3,
+  which is a derivative work of the three source datasets. It is released under
+  <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>,
+  the same licence as the three sources.
+</p>
+<table>
+  <thead>
+    <tr><th>Dataset</th><th>Source licence</th><th>Licence of the generated dataset</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>D1 Climate shelters</td><td>CC BY 4.0</td><td>CC BY 4.0</td></tr>
+    <tr><td>D2 Drinking fountains</td><td>CC BY 4.0</td><td>CC BY 4.0</td></tr>
+    <tr><td>D3 Street trees</td><td>CC BY 4.0</td><td>CC BY 4.0</td></tr>
+  </tbody>
+</table>
+<p>
+  CC BY 4.0 allows adaptation and redistribution, provided that the creator is credited,
+  the licence is linked and changes are indicated. Since all three sources use the same
+  licence, the generated dataset can be distributed under that licence as well,
+  and the same attribution conditions apply to it.
+</p>
+<p>
+  <strong>Compatibility with Wikidata.</strong> The generated dataset links neighbourhoods, districts, tree species and
+  facilities to Wikidata, whose structured data is released under
+  <a href="https://www.wikidata.org/wiki/Wikidata:Licensing">CC0</a> (public domain). Reusing its identifiers adds no
+  obligation and does not conflict with CC BY 4.0. The ontology is released under CC BY 4.0 as well.
+</p>
+<p>Attribution statement:</p>
+<blockquote>
+  Contains data from Open Data BCN, Ajuntament de Barcelona, licensed under
+  <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+  The data was converted to RDF and linked to Wikidata by Group 08.
+  This attribution does not imply endorsement by the Ajuntament de Barcelona.
+</blockquote>
 
 <h2 id="naming">3. Resource naming strategy</h2>
 <p>The strategy defines how the ontology terms and the individuals of the generated dataset are identified. It follows four steps: the URI form (hash or slash), the domain, the paths, and the pattern for classes, properties and individuals.</p>
@@ -156,13 +418,14 @@
   <tr><td>Path for ontology terms</td><td><code>/ontology/HeatRelief#</code></td><td>Separates the model from the data. Pattern: <code>[domain]/ontology/[ontologyName]#[term]</code>.</td></tr>
   <tr><td>Path for individuals</td><td><code>/resource/{ClassName}/{identifier}</code></td><td>Separates the data from the model. The class name in the path means that identifiers of different classes never collide.</td></tr>
   <tr><td>Property URIs</td><td><code>/ontology/HeatRelief#{propertyName}</code></td><td>Properties are defined independently of classes: they are never nested under a class path.</td></tr>
-  <tr><td>Naming conventions</td><td>UpperCamelCase for classes, lowerCamelCase for properties</td><td>Class names are also used as path segments of individuals. Labels are in English only.</td></tr>
+  <tr><td>Naming conventions</td><td>UpperCamelCase for classes, lowerCamelCase for properties</td><td>Class names are also used as path segments of individuals. The labels of the ontology terms are in English only; the names in the data keep their original language, with a language tag (for example <code>@ca</code>).</td></tr>
 </table>
 
 <h3>3.2 URI patterns</h3>
+<p>In the table, <code>...</code> stands for <code>https://w3id.org/barcelona-heat-relief</code>.</p>
 <table>
   <tr><th>Kind</th><th>Pattern</th><th>Example</th></tr>
-  <tr><td>Ontology</td><td><code>https://w3id.org/barcelona-heat-relief/ontology/HeatRelief</code></td><td></td></tr>
+  <tr><td>Ontology</td><td><code>.../ontology/{OntologyName}</code></td><td><code>https://w3id.org/barcelona-heat-relief/ontology/HeatRelief</code></td></tr>
   <tr><td>Class</td><td><code>.../ontology/HeatRelief#{ClassName}</code></td><td><code>.../ontology/HeatRelief#ClimateShelter</code></td></tr>
   <tr><td>Property</td><td><code>.../ontology/HeatRelief#{propertyName}</code></td><td><code>.../ontology/HeatRelief#hasShelterCategory</code></td></tr>
   <tr><td>Climate shelter</td><td><code>.../resource/ClimateShelter/{register_id}</code></td><td><code>.../resource/ClimateShelter/99400780928</code></td></tr>
@@ -170,28 +433,32 @@
   <tr><td>Drinking fountain</td><td><code>.../resource/DrinkingFountain/{CODI}</code></td><td><code>.../resource/DrinkingFountain/01-004</code></td></tr>
   <tr><td>Street tree</td><td><code>.../resource/StreetTree/{codi}</code></td><td><code>.../resource/StreetTree/0000423AR</code></td></tr>
   <tr><td>Tree species</td><td><code>.../resource/TreeSpecies/{cat_especie_id}</code></td><td><code>.../resource/TreeSpecies/108</code></td></tr>
-  <tr><td>Neighbourhood</td><td><code>.../resource/Neighbourhood/{code}</code></td><td><code>.../resource/Neighbourhood/65</code></td></tr>
-  <tr><td>District</td><td><code>.../resource/District/{code}</code></td><td><code>.../resource/District/10</code></td></tr>
+  <tr><td>Neighbourhood</td><td><code>.../resource/Neighbourhood/{neighbourhood_code}</code></td><td><code>.../resource/Neighbourhood/65</code></td></tr>
+  <tr><td>District</td><td><code>.../resource/District/{district_code}</code></td><td><code>.../resource/District/10</code></td></tr>
+  <tr><td>Facility</td><td>No pattern: the URI of its Wikidata item</td><td><code>http://www.wikidata.org/entity/Q85692758</code></td></tr>
 </table>
 
 <h3>3.3 Rules for the identifiers</h3>
 <ul>
   <li><strong>Source keys.</strong> Identifiers come from the stable, unique keys of the sources, never from names, addresses or districts, which change and contain accents and spaces. Only letters, digits and hyphens are used.</li>
+  <li><strong>Class in the path.</strong> An individual is named after its most specific class (for example <code>ClimateShelter</code>, never <code>UrbanElement</code>), so each individual has exactly one URI. <code>hr:UrbanElement</code> has no pattern because it has no direct individuals, and <code>hr:Facility</code> has none because its instances are Wikidata items.</li>
   <li><strong>Shelters: one URI per record.</strong> The identifier is <code>register_id</code>, without the hidden character U+FEFF that precedes it in the file (see 1.4). Records are not merged into facilities, because 94 records share street and number with another record (see 1.4) and sharing an address does not prove that they are the same place. Duplicates are handled when counting, not in the URI.</li>
   <li><strong>Fountains.</strong> The identifier is <code>CODI</code> (for example <code>01-004</code>). The hyphen is valid in a URI.</li>
   <li><strong>Street trees.</strong> The identifier is <code>codi</code>, which is unique in the 145,034 records. It is kept as text because it has leading zeros and letters (<code>0000423AR</code>). The class covers both the 140,271 trees and the 4,763 palms of the file.</li>
-  <li><strong>Tree species.</strong> The identifier is the numeric <code>cat_especie_id</code>, because scientific names change (synonyms such as <em>Platanus &times; acerifolia</em>, also written <em>Platanus &times; hispanica</em>) and include varieties and cultivars. In the file, each id has exactly one name, so the id is a valid key. The one name with two ids (<em>Ulmus minor</em> 'Umbraculifera', ids 589 and 2764) is given a single URI, built from the lower id (589), in the data preparation; the trees with the id 2764 point to it. The ids are at the level used by the city, which includes cultivars (77 of the 288 names have a cultivar name in quotes, see 1.4), so several species URIs can be linked to the same Wikidata species item. The name stays available as the <code>scientificName</code> property.</li>
-  <li><strong>Neighbourhoods and districts.</strong> The identifier is the two-digit code, always kept as text so that <code>03</code> is not turned into <code>3</code>. Neighbourhood <code>03</code> and district <code>03</code> do not collide because the class name is part of the path. The three datasets share the same 73 neighbourhood and 10 district codes (see 1.3), so one individual serves all of them; a fountain is linked to its neighbourhood and its district is derived from it. The 14 records that have a district but no neighbourhood (10 fountains, 4 trees) get no area link (see 1.4).</li>
+  <li><strong>Tree species.</strong> The identifier is the numeric <code>cat_especie_id</code>, because scientific names change (synonyms such as <em>Platanus &times; acerifolia</em>, also written <em>Platanus &times; hispanica</em>) and include varieties and cultivars. In the file, each id has exactly one name, so the id is a valid key. The one name with two ids (<em>Ulmus minor</em> 'Umbraculifera', ids 589 and 2764) is given a single URI, built from the lower id (589), in the data preparation; the trees with the id 2764 point to it. The ids are at the level used by the city, which includes cultivars (77 of the 288 names have a cultivar name in quotes, see 1.4), so several species URIs can correspond to the same Wikidata species item (see 3.4). The name stays available as the <code>scientificName</code> property.</li>
+  <li><strong>Neighbourhoods and districts.</strong> The identifier is the two-digit code (<code>addresses_neighborhood_id</code> and <code>addresses_district_id</code> in D1, <code>CODI_BARRI</code> and <code>CODI_DISTRICTE</code> in D2, <code>codi_barri</code> and <code>codi_districte</code> in D3), always kept as text so that <code>03</code> is not turned into <code>3</code>. Neighbourhood <code>03</code> and district <code>03</code> do not collide because the class name is part of the path. The three datasets share the same 73 neighbourhood and 10 district codes (see 1.3), so one individual serves all of them; a fountain is linked to its neighbourhood and its district is derived from it. The 14 records that have a district but no neighbourhood (10 fountains, 4 trees) get no area link (see 1.4).</li>
   <li><strong>Shelter categories.</strong> A fixed list of CamelCase names (for example <code>Library</code>, <code>SwimmingPool</code>, <code>Market</code>, <code>Other</code>), defined once in the data preparation. The category is derived from the shelter name, because no column of D1 states the type (see 1.4).</li>
 </ul>
 
 <h3>3.4 Dereferencing, persistence and external URIs</h3>
 <ul>
   <li><strong>Things and documents.</strong> A URI under <code>/resource/</code> identifies the real-world thing (a shelter, a fountain, a neighbourhood), not a web page about it. A request to such a URI is answered with an HTTP 303 (See Other) redirect to <code>/page/{ClassName}/{identifier}</code> (HTML) or to <code>/data/{ClassName}/{identifier}.ttl</code> (Turtle), depending on the Accept header of the request (content negotiation). Each URI therefore identifies only one item.</li>
-  <li><strong>Ontology.</strong> The hash URI <code>.../ontology/HeatRelief</code> returns the documentation or the Turtle file, depending on the Accept header.</li>
+  <li><strong>Ontology.</strong> The terms are hash URIs. A client removes the fragment before it sends a request, so every term is looked up through the ontology URI <code>.../ontology/HeatRelief</code> (without <code>#</code>). A request to that URI is answered with a 303 redirect to the HTML documentation or to the Turtle file, depending on the Accept header.</li>
   <li><strong>Status.</strong> Content negotiation and redirects are the planned design for the publication of the dataset; they are not deployed in this assignment.</li>
   <li><strong>Persistence.</strong> The URIs contain no server name, no file extension, no query and no version number, so they do not have to change if the hosting changes.</li>
-  <li><strong>Other datasets.</strong> The project never mints URIs inside the Wikidata namespace. Neighbourhoods, districts and species are linked to the Wikidata items with <code>owl:sameAs</code>.</li>
+  <li><strong>Other datasets.</strong> The project never mints URIs inside the Wikidata namespace. Neighbourhoods and districts are linked to their Wikidata items with <code>owl:sameAs</code>, because both URIs identify the same place.</li>
+  <li><strong>Tree species and Wikidata.</strong> <code>owl:sameAs</code> is used only when the entry of the city is the same taxon as the Wikidata item, for example <em>Pinus pinea</em> (id 108); a synonym such as <em>Platanus &times; acerifolia</em> for <em>Platanus &times; hispanica</em> is the same taxon. Cultivars, varieties and forms are linked to the item of their species with <code>skos:broadMatch</code>. The reason is that <code>owl:sameAs</code> is symmetric and transitive: if <em>Platanus &times; acerifolia</em> (id 126) and its cultivar 'Alphen's Globe' (id 5286580) were both declared <code>owl:sameAs</code> the same item, the two entries would become the same resource.</li>
+  <li><strong>Shelters and Wikidata.</strong> Shelters are not linked with <code>owl:sameAs</code> either. A shelter is often only a part of the place that hosts it (for example the water-play area of a park), so the link to the Wikidata item of that place (a library, a market, a park) uses the object property <code>hr:isHostedBy</code>, whose range is <code>hr:Facility</code>.</li>
 </ul>
 
 <h3>3.5 Requirements of the strategy</h3>
@@ -215,6 +482,10 @@
   <tr><td><code>species:</code></td><td><code>https://w3id.org/barcelona-heat-relief/resource/TreeSpecies/</code></td></tr>
   <tr><td><code>neighbourhood:</code></td><td><code>https://w3id.org/barcelona-heat-relief/resource/Neighbourhood/</code></td></tr>
   <tr><td><code>district:</code></td><td><code>https://w3id.org/barcelona-heat-relief/resource/District/</code></td></tr>
+  <tr><td><code>geo:</code></td><td><code>http://www.w3.org/2003/01/geo/wgs84_pos#</code> (W3C Basic Geo)</td></tr>
+  <tr><td><code>skos:</code></td><td><code>http://www.w3.org/2004/02/skos/core#</code></td></tr>
+  <tr><td><code>wd:</code></td><td><code>http://www.wikidata.org/entity/</code></td></tr>
+  <tr><td><code>rdf:</code>, <code>rdfs:</code>, <code>owl:</code>, <code>xsd:</code>, <code>dcterms:</code>, <code>vann:</code></td><td>The usual W3C, Dublin Core and VANN namespaces</td></tr>
 </table>
 
 </body>
