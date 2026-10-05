@@ -16,27 +16,16 @@
 
 **The ontology file:**
 
-- [ ] Uses the .ttl extension
-- [ ] Is serialized in the Turtle format
-- [ ] Follows the resource naming strategy
-- [ ] Contains at least one class
-- [ ] Contains at least one object property (where the value of the property is a resource)
-- [ ] Contains at least one datatype property (where the value of the property is a string literal, usually typed)
-- [ ] Defines the domain of all the properties (the origin of the property)
-- [ ] Defines the range of all the properties (the destination of the property)
-- [ ] Defines all class names starting with a capital letter
-- [ ] Defines all property names starting with a non-capital letter
-- [ ] Does not mix labels in different languages (e.g., Spanish and English)
-- [ ] Does not define multiple domains or multiple ranges in properties
-- [ ] Contains at least one class that will be used to link to other entities
-
-## Comments on the self-assessment
-The data-source and licensing analyses are included in Sections 1 and 2 of
-`analysis.html`. Section 3 defines the resource naming strategy, including the
-ontology namespace, separate entity paths, source-key normalization, and planned
-HTML/Turtle content negotiation. Property URIs are also independent of class URIs.
-
-The selected `madridnoise.linkeddata.es` namespace describes the publication design;
-subdomain permission, DNS, HTTPS hosting and HTTP routes remain to be arranged
-before publication. The ontology and example files are still empty, so the
-ontology criteria remain unchecked.
+- [x] Uses the .ttl extension
+- [x] Is serialized in the Turtle format
+- [x] Follows the resource naming strategy
+- [x] Contains at least one class
+- [x] Contains at least one object property (where the value of the property is a resource)
+- [x] Contains at least one datatype property (where the value of the property is a string literal, usually typed)
+- [x] Defines the domain of all the properties (the origin of the property)
+- [x] Defines the range of all the properties (the destination of the property)
+- [x] Defines all class names starting with a capital letter
+- [x] Defines all property names starting with a non-capital letter
+- [x] Does not mix labels in different languages (e.g., Spanish and English)
+- [x] Does not define multiple domains or multiple ranges in properties
+- [x] Contains at least one class that will be used to link to other entities
