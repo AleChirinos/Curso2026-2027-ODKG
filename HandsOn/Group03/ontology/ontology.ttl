@@ -1,0 +1,163 @@
+@prefix owl:  .
+@prefix rdf:  .
+@prefix rdfs:  .
+@prefix xsd:  .
+@prefix dcterms:  .
+@prefix sosa:  .
+@prefix geo:  .
+@prefix mn:  .
+@prefix base:  .
+@prefix period:  .
+@prefix dataset:  .
+@prefix cc:  .
+
+base:ontology a owl:Ontology ;
+    dcterms:title "Madrid urban noise ontology"@en ;
+    dcterms:description "Ontology for daily acoustic pollution measurements from the Madrid noise monitoring network, together with registered hospitality terraces."@en ;
+    dcterms:license cc: ;
+    dcterms:source dataset:215885-0-contaminacion-ruido ,
+                   dataset:211346-0-estaciones-acusticas ,
+                   dataset:200085-0-censo-locales ;
+    owl:versionInfo "1.0" ;
+    owl:imports sosa: .
+
+# --- Classes ---
+
+mn:NoiseMonitoringStation a owl:Class ;
+    rdfs:subClassOf sosa:Platform , geo:SpatialThing ;
+    rdfs:label "Noise monitoring station"@en , "Estación de medida de ruido"@es ;
+    rdfs:comment "Station belonging to the Madrid acoustic pollution monitoring network."@en .
+
+mn:DailyNoiseObservation a owl:Class ;
+    rdfs:subClassOf sosa:Observation ;
+    rdfs:label "Daily noise observation"@en , "Observación diaria de ruido"@es ;
+    rdfs:comment "Acoustic indicators measured for one station, one date and one period."@en .
+
+mn:DayPeriod a owl:Class ;
+    rdfs:label "Period of the day"@en , "Periodo del día"@es ;
+    rdfs:comment "Controlled period used by the daily noise dataset: D, E, N or T."@en .
+
+mn:Terrace a owl:Class ;
+    rdfs:subClassOf geo:SpatialThing ;
+    rdfs:label "Hospitality terrace"@en , "Terraza de hostelería"@es ;
+    rdfs:comment "Registered hospitality terrace used for spatial noise correlation."@en .
+
+mn:District a owl:Class ;
+    rdfs:label "District"@en , "Distrito"@es .
+
+mn:Neighbourhood a owl:Class ;
+    rdfs:label "Neighbourhood"@en , "Barrio"@es .
+
+# --- Object Properties ---
+
+mn:recordedAt a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:DailyNoiseObservation ;
+    rdfs:range mn:NoiseMonitoringStation ;
+    rdfs:label "recorded at"@en ;
+    rdfs:comment "Station that recorded the observation."@en .
+
+mn:forPeriod a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:DailyNoiseObservation ;
+    rdfs:range mn:DayPeriod ;
+    rdfs:label "for period"@en .
+
+mn:hasDistrict a owl:ObjectProperty ;
+    rdfs:domain mn:Terrace ;
+    rdfs:range mn:District ;
+    rdfs:label "has district"@en .
+
+mn:hasNeighbourhood a owl:ObjectProperty ;
+    rdfs:domain mn:Terrace ;
+    rdfs:range mn:Neighbourhood ;
+    rdfs:label "has neighbourhood"@en .
+
+# --- Datatype Properties: Station ---
+
+mn:stationCode a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:NoiseMonitoringStation ;
+    rdfs:range xsd:string ;
+    rdfs:label "station code"@en .
+
+mn:stationName a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:NoiseMonitoringStation ;
+    rdfs:range xsd:string ;
+    rdfs:label "station name"@en .
+
+# --- Datatype Properties: Observation ---
+
+mn:observationDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:DailyNoiseObservation ;
+    rdfs:range xsd:date ;
+    rdfs:label "observation date"@en .
+
+mn:periodCode a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:DayPeriod ;
+    rdfs:range xsd:string ;
+    rdfs:label "period code"@en .
+
+mn:laeq a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:DailyNoiseObservation ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "LAeq"@en .
+
+mn:las01 a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:DailyNoiseObservation ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "LAS01"@en .
+
+mn:las10 a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:DailyNoiseObservation ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "LAS10"@en .
+
+mn:las50 a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:DailyNoiseObservation ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "LAS50"@en .
+
+mn:las90 a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:DailyNoiseObservation ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "LAS90"@en .
+
+mn:las99 a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:DailyNoiseObservation ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "LAS99"@en .
+
+# --- Datatype Properties: Terrace ---
+
+mn:terraceId a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain mn:Terrace ;
+    rdfs:range xsd:integer ;
+    rdfs:label "terrace identifier"@en .
+
+# --- Geographic Properties ---
+
+mn:latitude a owl:DatatypeProperty ;
+    rdfs:subPropertyOf geo:lat ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "latitude"@en .
+
+mn:longitude a owl:DatatypeProperty ;
+    rdfs:subPropertyOf geo:long ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "longitude"@en .
+
+# --- Controlled Individuals ---
+
+period:D a mn:DayPeriod ;
+    rdfs:label "Day (07:00-19:00)"@en ;
+    mn:periodCode "D" .
+
+period:E a mn:DayPeriod ;
+    rdfs:label "Evening (19:00-23:00)"@en ;
+    mn:periodCode "E" .
+
+period:N a mn:DayPeriod ;
+    rdfs:label "Night (23:00-07:00)"@en ;
+    mn:periodCode "N" .
+
+period:T a mn:DayPeriod ;
+    rdfs:label "Total (24h)"@en ;
+    mn:periodCode "T" .
