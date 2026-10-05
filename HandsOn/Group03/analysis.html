@@ -179,8 +179,6 @@
       <li><strong>Percentile issues:</strong> 4 rows contain <code>0</code> in a percentile, and in 4,262 rows (0.6%) the order <code>L1 &ge; L10 &ge; L50 &ge; L90 &ge; L99</code> is not respected.</li>
       <li><strong>Catalog formatting:</strong> broken coordinates (<code>-3.691.877</code>); a trailing space in <code>"Carabanchel "</code>; neighbourhood <code>Quitana</code> should be <code>Quintana</code>; RF-01 has <code>FECHA ALTA</code> 07/03/2011 although station 1 has data since 1998.</li>
       <li><strong>Terraces without location:</strong> 112 terraces have coordinates <code>0.0</code>; they cannot be placed on the map or counted around a station.</li>
-      <li><strong>Terrace names not aligned with the station catalog:</strong> districts and neighbourhoods are in upper case, without accents and padded with spaces (<code>"CHAMBERI            "</code>), while the station catalog uses <code>Chamberí</code>. Names must be trimmed and normalized before linking both files.</li>
-      <li><strong>Other terrace issues:</strong> 192 terraces have 0 authorized chairs in the seasonal period; text fields such as street names are padded with spaces; the file encoding (UTF-8) differs from the noise files (ISO-8859-1).</li>
     </ul>
   </div>
 
