@@ -64,13 +64,14 @@ details{margin:16px 0}summary{cursor:pointer;font-weight:600;color:var(--accent)
 <section id="licensing">
 <h2>2. Licensing</h2>
 <table class="compact"><thead><tr><th>Item</th><th>Choice / source</th></tr></thead><tbody>
-<tr><td>Publisher / distributor</td><td>Nokkyu / Kaggle. [1, 2]</td></tr>
-<tr><td>Original provider</td><td>Deutsche Bahn, via Timetables and StaDa APIs. [2]</td></tr>
-<tr><td>Rightsholder</td><td>Nokkyu compiles the dataset; metadata does not establish exclusive rights over all upstream data.</td></tr>
-<tr><td>Declared source licence</td><td><strong>MIT</strong> — Kaggle metadata, version 3, checked 5 October 2026. [2]</td></tr>
-<tr><td>Proposed RDF licence</td><td><strong>MIT</strong>, subject to applicable upstream terms. Retain copyright, permission and warranty notices. [3]</td></tr>
+<tr><td>Publisher / distributor of the selected dataset</td><td>Nokkyu compiled and publishes the dataset through Kaggle; Kaggle is the hosting and distribution platform. [1, 2]</td></tr>
+<tr><td>Original data provider</td><td>Deutsche Bahn, through the official Timetables and StaDa APIs. [3]</td></tr>
+<tr><td>Rightsholder / licensing authority</td><td>The selected dataset is compiled and published by Nokkyu, while the underlying data originates from Deutsche Bahn's Timetables and StaDa APIs. The official DB API Marketplace licenses both datasets under CC BY 4.0.</td></tr>
+<tr><td>Kaggle-declared licence</td><td><strong>MIT</strong> — declared in the Kaggle metadata for this dataset, version 3, checked 5 October 2026. This is distinct from the licence governing the underlying DB data. [2]</td></tr>
+<tr><td>Upstream data licence</td><td><strong>Creative Commons Attribution 4.0 International (CC BY 4.0)</strong> for both Timetables and StaDa, as stated by the official DB API Marketplace. [3]</td></tr>
+<tr><td>Licence for the generated RDF dataset</td><td><strong>CC BY 4.0</strong>, because the RDF derives from and republishes data originating from the CC BY 4.0 DB sources.</td></tr>
 </tbody></table>
-<p>Credit Nokkyu and the DB APIs, link the dataset and collection repository, and document cleaning and RDF conversion. Check upstream terms and obtain the actual source copyright notice before redistribution.</p>
+<p>The RDF publication will retain appropriate attribution to Deutsche Bahn and will also credit Nokkyu and Kaggle as the immediate dataset source, with links to the dataset and the official DB API pages.</p>
 </section>
 
 <section id="naming">
@@ -111,8 +112,8 @@ details{margin:16px 0}summary{cursor:pointer;font-weight:600;color:var(--accent)
 <h2>References</h2>
 <ol>
 <li><a href="https://www.kaggle.com/datasets/nokkyu/deutsche-bahn-db-delays/data">Nokkyu — Deutsche Bahn (DB) delays</a>.</li>
-<li><a href="https://www.kaggle.com/api/v1/datasets/view/nokkyu/deutsche-bahn-db-delays">Kaggle metadata</a>, retrieved 5 October 2026; version 3, last update 15 July 2024. Collection repository: <a href="https://github.com/Nokkyuu/Fantastic_trains_and_when_to_find_them">Fantastic_trains_and_when_to_find_them</a>. Upstream terms remain unverified.</li>
-<li><a href="https://opensource.org/license/mit">Open Source Initiative — MIT License</a>.</li>
+<li><a href="https://www.kaggle.com/api/v1/datasets/view/nokkyu/deutsche-bahn-db-delays">Kaggle metadata</a>, retrieved 5 October 2026; version 3, last update 15 July 2024. Collection repository: <a href="https://github.com/Nokkyuu/Fantastic_trains_and_when_to_find_them">Fantastic_trains_and_when_to_find_them</a>.</li>
+<li>DB API Marketplace: <a href="https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables">Timetables</a> and <a href="https://developers.deutschebahn.com/db-api-marketplace/apis/product/stada">StaDa</a>; both official pages specify <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International (CC BY 4.0)</a>.</li>
 <li><em>ODKG 07.MGLD assignment1.pdf</em>, slides 19, 22, 37–38.</li>
 <li><em>ODKG 08.MGLD - Ontology assignment2.pdf</em>, slides 48–50.</li>
 <li><a href="DBtrainrides.csv">DBtrainrides.csv</a>: all 2,061,357 rows parsed with Python CSV, excluding the header; empty cells counted as missing. Duplicate rows checked with SHA-256 fingerprints. External references retained from the previous analysis.</li>
