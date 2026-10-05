@@ -141,6 +141,35 @@
     </div>
   </div>
 
+  <div class="req-card">
+    <div class="req-title">1.6 Terraces File (200085)</div>
+    <p>File <code>csv/terrazas_hosteleria.csv</code> (copy of the portal file <code>200085-6-censo-locales.csv</code>, the "Terrazas" resource of the dataset): <strong>6,594 rows</strong> (one per terrace), <strong>117 columns</strong>, about 5.2&nbsp;MB, data loaded on 04/10/2026 (column <code>fx_carga</code>).</p>
+    <ul>
+      <li><strong>Format:</strong> UTF-8 with BOM (different from the two noise files, which are ISO-8859-1), semicolon separator, all fields between double quotes, CRLF line endings.</li>
+      <li><strong>Decimal mark:</strong> point (<code>16.70</code>), not comma. Booleans are written <code>True</code> / <code>False</code>.</li>
+      <li><strong>Key:</strong> <code>id_terraza</code> is unique (no duplicates). One premise (<code>id_local</code>) can have several terraces (6,438 premises for 6,594 terraces).</li>
+      <li><strong>Suffixes:</strong> columns ending in <code>_es</code> refer to the seasonal period and columns ending in <code>_ra</code> to the rest of the year. Hours are given for Monday–Thursday (<code>LJ</code>) and Friday–Saturday (<code>VS</code>).</li>
+    </ul>
+    <p>We only use the following columns; the other ones (street furniture, heaters, awnings, planning zones…) are not needed for our application.</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Column</th><th>Content</th><th>Values</th></tr>
+      <tr><td><code>id_terraza</code></td><td>Terrace identifier</td><td>Integer, 8–20881</td></tr>
+      <tr><td><code>coordenada_x_local</code>, <code>coordenada_y_local</code></td><td>UTM coordinates (zone 30N) of the premise, in metres; same system as <code>X</code>, <code>Y</code> in the station catalog</td><td>X: 432,689–453,291 · Y: 4,465,220–4,487,142 (112 rows are <code>0.0</code>)</td></tr>
+      <tr><td><code>desc_distrito_local</code>, <code>desc_barrio_local</code></td><td>District and neighbourhood</td><td>21 districts, 129 neighbourhoods. Most terraces: Centro (813), Chamberí (579), Salamanca (512)</td></tr>
+      <tr><td><code>rotulo</code></td><td>Name of the business</td><td>Free text (<code>S/R</code> when there is no name)</td></tr>
+      <tr><td><code>desc_periodo_terraza</code></td><td>Annual or seasonal terrace</td><td>Anual: 5,589 · Estacional: 1,005</td></tr>
+      <tr><td><code>desc_situacion_terraza</code></td><td>Status</td><td>Abierta: 6,570 · Suspension temporal: 24</td></tr>
+      <tr><td><code>desc_ubicacion_terraza</code></td><td>Where the terrace is placed</td><td>8 values; Acera (sidewalk): 5,125, Calle peatonal: 433, Plaza peatonal: 401…</td></tr>
+      <tr><td><code>mesas_es</code>, <code>sillas_es</code></td><td>Authorized tables and chairs (seasonal period)</td><td>Tables 0–105 (mean 9.8) · Chairs 0–420 (mean 31.4, median 24)</td></tr>
+      <tr><td><code>mesas_ra</code>, <code>sillas_ra</code></td><td>Authorized tables and chairs (rest of the year)</td><td>Tables 0–84 (mean 8.1) · Chairs 0–320 (mean 25.7); empty in 131 rows</td></tr>
+      <tr><td><code>Superficie_ES</code>, <code>Superficie_RA</code></td><td>Surface in m²</td><td>0.75–824 (mean 30.0); <code>Superficie_RA</code> empty for the 1,005 seasonal terraces</td></tr>
+      <tr><td><code>hora_fin_LJ_es</code>, <code>hora_fin_VS_es</code></td><td>Closing time (seasonal period)</td><td>Most frequent: 01:00 (Mon–Thu), 01:30 and 02:30 (Fri–Sat)</td></tr>
+    </table>
+    </div>
+    <p>Closing times are relevant for the noise analysis: in the seasonal period, 94.7% of terraces close between 00:00 and 02:30 from Monday to Thursday, and 99.0% from Friday to Saturday, that is, inside the night period (<code>N</code>, 23–7h) of the noise data.</p>
+  </div>
+
   <h2>Data Quality Issues Found</h2>
   <div class="data-issue">
     <ul>
@@ -149,6 +178,9 @@
       <li><strong>Outliers:</strong> 4 rows above 100 dB(A) (stations 18 and 13, April and August 2007, up to 140.2) and 39 rows below 35 dB(A). They are physically doubtful; we keep them but will flag them.</li>
       <li><strong>Percentile issues:</strong> 4 rows contain <code>0</code> in a percentile, and in 4,262 rows (0.6%) the order <code>L1 &ge; L10 &ge; L50 &ge; L90 &ge; L99</code> is not respected.</li>
       <li><strong>Catalog formatting:</strong> broken coordinates (<code>-3.691.877</code>); a trailing space in <code>"Carabanchel "</code>; neighbourhood <code>Quitana</code> should be <code>Quintana</code>; RF-01 has <code>FECHA ALTA</code> 07/03/2011 although station 1 has data since 1998.</li>
+      <li><strong>Terraces without location:</strong> 112 terraces have coordinates <code>0.0</code>; they cannot be placed on the map or counted around a station.</li>
+      <li><strong>Terrace names not aligned with the station catalog:</strong> districts and neighbourhoods are in upper case, without accents and padded with spaces (<code>"CHAMBERI            "</code>), while the station catalog uses <code>Chamberí</code>. Names must be trimmed and normalized before linking both files.</li>
+      <li><strong>Other terrace issues:</strong> 192 terraces have 0 authorized chairs in the seasonal period; text fields such as street names are padded with spaces; the file encoding (UTF-8) differs from the noise files (ISO-8859-1).</li>
     </ul>
   </div>
 
