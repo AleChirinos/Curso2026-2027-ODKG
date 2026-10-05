@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis & Resource Naming Strategy</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; line-height: 1.6; margin: 40px; color: #333; max-width: 1000px; }
+        h1, h2, h3 { color: #2c3e50; }
+        h2 { border-bottom: 2px solid #eee; padding-bottom: 5px; margin-top: 30px; }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px; }
+        th, td { border: 1px solid #ffffff; padding: 10px; text-align: left; }
+        th { background-color: #2b78e4; color: white; font-weight: bold; }
+        tr:nth-child(odd) { background-color: #dbe5f1; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        td:first-child { font-weight: bold; }
+        code { background-color: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <h1>Dataset & Licensing Analysis</h1>
+
+    <h2>1. Dataset Analysis</h2>
+    <p>We analyzed two datasets: <strong>CPD_Facilities</strong> and <strong>CPD_Park_Art</strong>. Below are the key findings regarding their schema, quantities, and data cleaning requirements to be executed in OpenRefine:</p>
+
+    <h3>1.1. Chicago Park District Facilities Dataset</h3>
+    <ul>
+        <li><strong>Quantities:</strong> 4,467 rows and 9 columns.</li>
+        <li><strong>Null Values:</strong> Very clean data, only 1 missing value in <code>FACILITY_N</code> and 1 in <code>FACILITY_T</code>.</li>
+        <li><strong>Unique Values:</strong> Contains 549 unique parks, 75 unique facility names (e.g., "CULTURAL CENTER", "PLAYGROUND"), and 3 main facility categories (<code>FACILITY_T</code>).</li>
+        <li><strong>Data Type Issues:</strong> 
+            <ul>
+                <li>The coordinate columns (<code>X_COORD</code>, <code>Y_COORD</code>) use commas as decimal separators (e.g., <code>-87,52486664</code>). We must apply a text transform: <code>value.replace(",", ".")</code> and convert the column to numeric.</li>
+                <li><code>OBJECTID_1</code> and <code>PARK_NO</code> should be converted to numeric integers.</li>
+            </ul>
+        </li>
+    </ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Column</th>
+                <th>Type</th>
+                <th>Comments / Range (rounded)</th>
+                <th>Problems</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>the_geom</td>
+                <td>String (Point)</td>
+                <td>Spatial point format (WKT)</td>
+                <td>None</td>
+            </tr>
+            <tr>
+                <td>OBJECTID_1</td>
+                <td>Integer</td>
+                <td>Unique row identifier (1 to ~4467)</td>
+                <td>Imported as String by default. Needs conversion to Integer.</td>
+            </tr>
+            <tr>
+                <td>PARK</td>
+                <td>String</td>
+                <td>Name of the park (549 unique parks)</td>
+                <td>None</td>
+            </tr>
+            <tr>
+                <td>PARK_NO</td>
+                <td>Integer</td>
+                <td>Unique park identifier (1 to ~598)</td>
+                <td>Imported as String by default. Needs conversion to Integer.</td>
+            </tr>
+            <tr>
+                <td>FACILITY_N</td>
+                <td>String</td>
+                <td>Facility name (75 unique types)</td>
+                <td>1 missing value.</td>
+            </tr>
+            <tr>
+                <td>FACILITY_T</td>
+                <td>String</td>
+                <td>Broad facility category (3 unique types)</td>
+                <td>1 missing value.</td>
+            </tr>
+            <tr>
+                <td>X_COORD</td>
+                <td>Float</td>
+                <td>Range: -87.84 to -87.52</td>
+                <td>Uses comma (,) as decimal separator. Needs cast to numeric.</td>
+            </tr>
+            <tr>
+                <td>Y_COORD</td>
+                <td>Float</td>
+                <td>Range: 41.65 to 42.02</td>
+                <td>Uses comma (,) as decimal separator. Needs cast to numeric.</td>
+            </tr>
+            <tr>
+                <td>GISOBJID</td>
+                <td>Integer</td>
+                <td>Internal CPD GIS identifier</td>
+                <td>Imported as String by default. Needs conversion to Integer.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>1.2. Chicago Park District Park Art Dataset</h3>
+    <ul>
+        <li><strong>Quantities:</strong> 346 rows and 11 columns.</li>
+        <li><strong>Null Values:</strong> Contains missing data in <code>ARTIST</code> (15 nulls), <code>OWNER</code> (53 nulls), and <code>OFFICIAL_N</code> (164 nulls).</li>
+        <li><strong>Unique Values:</strong> 117 unique parks containing art, and 263 unique artists.</li>
+        <li><strong>Data Type Issues:</strong> 
+            <ul>
+                <li>Similar to the facilities data, <code>X_COORD</code> and <code>Y_COORD</code> contain commas instead of decimals and must be transformed and cast to floats.</li>
+                <li>Blank cells in the <code>ARTIST</code> column should be filled as "Unknown Artist" to avoid mapping errors during RDF generation.</li>
+            </ul>
+        </li>
+    </ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Column</th>
+                <th>Type</th>
+                <th>Comments / Range (rounded)</th>
+                <th>Problems</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>the_geom</td>
+                <td>String (Point)</td>
+                <td>Spatial point format (WKT)</td>
+                <td>None</td>
+            </tr>
+            <tr>
+                <td>OBJECTID</td>
+                <td>Integer</td>
+                <td>Unique row identifier (1 to 346)</td>
+                <td>Imported as String by default. Needs conversion to Integer.</td>
+            </tr>
+            <tr>
+                <td>PARK</td>
+                <td>String</td>
+                <td>Name of the park (117 unique parks)</td>
+                <td>None</td>
+            </tr>
+            <tr>
+                <td>PARK_NO</td>
+                <td>Integer</td>
+                <td>Unique park identifier</td>
+                <td>Imported as String by default. Needs conversion to Integer.</td>
+            </tr>
+            <tr>
+                <td>NAME</td>
+                <td>String</td>
+                <td>Name of the artwork</td>
+                <td>None</td>
+            </tr>
+            <tr>
+                <td>X_COORD</td>
+                <td>Float</td>
+                <td>Range: -87.84 to -87.53</td>
+                <td>Uses comma (,) as decimal separator. Needs cast to numeric.</td>
+            </tr>
+            <tr>
+                <td>Y_COORD</td>
+                <td>Float</td>
+                <td>Range: 41.65 to 42.02</td>
+                <td>Uses comma (,) as decimal separator. Needs cast to numeric.</td>
+            </tr>
+            <tr>
+                <td>ARTIST</td>
+                <td>String</td>
+                <td>Name of the artist (263 unique)</td>
+                <td>15 missing values. Blank cells should be filled as "Unknown Artist" to avoid mapping errors.</td>
+            </tr>
+            <tr>
+                <td>OWNER</td>
+                <td>String</td>
+                <td>Owner entity (e.g., CPD)</td>
+                <td>53 missing values.</td>
+            </tr>
+            <tr>
+                <td>GISOBJID</td>
+                <td>Integer</td>
+                <td>Internal CPD GIS identifier</td>
+                <td>Imported as String by default. Needs conversion to Integer.</td>
+            </tr>
+            <tr>
+                <td>OFFICIAL_N</td>
+                <td>String</td>
+                <td>Official designation name</td>
+                <td>164 missing values.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>2. Licensing Analysis</h2>
+    <ul>
+        <li><strong>Publisher:</strong> City of Chicago (Chicago Data Portal)</li>
+        <li><strong>Rightsholder:</strong> Chicago Park District</li>
+        <li><strong>Original License:</strong> The data portal provides the raw datasets under a "Public Domain" designation. However, their Terms of Use states that secondary applications utilizing modified data must feature a specific legal disclaimer acknowledging the City of Chicago as the source and disclaiming liability.</li>
+        <li><strong>Proposed License:</strong> Because the source data is Public Domain, we will publish the generated RDF datasets under a <strong>Creative Commons Attribution 4.0 International (CC BY 4.0)</strong> license. This satisfies the requirement to credit the City of Chicago while allowing the data to be freely shared, linked, and adapted.</li>
+    </ul>
+
+    <h2>3. Resource Naming Strategy</h2>
+    <p>To ensure our RDF graph is linked appropriately, we have defined the following URI architecture:</p>
+    
+    <h3>Domain & Paths</h3>
+    <ul>
+        <li><strong>Base Domain:</strong> <code>http://smartcity.chicago.es</code></li>
+        <li><strong>Ontology Path:</strong> <code>http://smartcity.chicago.es/ontology/ParkExplorer#</code></li>
+        <li><strong>Data/Resource Path:</strong> <code>http://smartcity.chicago.es/resource/</code></li>
+    </ul>
+
+    <h3>Class & Property URI Patterns</h3>
+    <ul>
+        <li><strong>Classes:</strong> CamelCase (e.g., <code>http://smartcity.chicago.es/ontology/ParkExplorer#Artwork</code>)</li>
+        <li><strong>Properties:</strong> camelCase (e.g., <code>http://smartcity.chicago.es/ontology/ParkExplorer#hasFacility</code>)</li>
+    </ul>
+
+    <h3>Instance Naming Patterns</h3>
+    <table>
+        <tr>
+            <th>Concept / Class</th>
+            <th>URI Pattern</th>
+            <th>Example</th>
+        </tr>
+        <tr>
+            <td>Park</td>
+            <td><code>/resource/Park/{PARK_NO}</code></td>
+            <td><code>.../resource/Park/165</code></td>
+        </tr>
+        <tr>
+            <td>Facility</td>
+            <td><code>/resource/Facility/{OBJECTID_1}</code></td>
+            <td><code>.../resource/Facility/2494</code></td>
+        </tr>
+        <tr>
+            <td>Artwork</td>
+            <td><code>/resource/Artwork/{OBJECTID}</code></td>
+            <td><code>.../resource/Artwork/5856</code></td>
+        </tr>
+        <tr>
+            <td>Artist</td>
+            <td><code>/resource/Artist/{ARTIST_NAME}</code></td>
+            <td><code>.../resource/Artist/Phil_Schuster</code></td>
+        </tr>
+    </table>
+
+</body>
+</html>
