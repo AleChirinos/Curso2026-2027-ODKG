@@ -1,0 +1,93 @@
+@prefix rdfs:  .
+@prefix xsd:  .
+@prefix dcterms:  .
+@prefix dcat:  .
+@prefix mn:  .
+@prefix station:  .
+@prefix observation:  .
+@prefix terrace:  .
+@prefix district:  .
+@prefix neighbourhood:  .
+@prefix period:  .
+@prefix localdata:  .
+@prefix dataset:  .
+@prefix cc:  .
+@prefix gov:  .
+
+# --- Dataset Metadata ---
+
+localdata:daily-noise a dcat:Dataset ;
+    dcterms:title "Madrid daily noise measurements (Linked Data)"@en ;
+    dcterms:license cc: ;
+    dcterms:rightsHolder gov:L01280796 ;
+    dcterms:source dataset:215885-0-contaminacion-ruido ,
+                   dataset:211346-0-estaciones-acusticas ,
+                   dataset:200085-0-censo-locales .
+
+# --- Station Instance ---
+
+station:RF-02 a mn:NoiseMonitoringStation ;
+    rdfs:label "Carlos V"@en ;
+    mn:stationCode "RF-02" ;
+    mn:latitude 40.4091 ;
+    mn:longitude -3.6915 .
+
+# --- Controlled Period Instances ---
+
+period:D a mn:DayPeriod ;
+    rdfs:label "Day (07:00-19:00)"@en ;
+    mn:periodCode "D" .
+
+period:E a mn:DayPeriod ;
+    rdfs:label "Evening (19:00-23:00)"@en ;
+    mn:periodCode "E" .
+
+period:N a mn:DayPeriod ;
+    rdfs:label "Night (23:00-07:00)"@en ;
+    mn:periodCode "N" .
+
+period:T a mn:DayPeriod ;
+    rdfs:label "Total (24h)"@en ;
+    mn:periodCode "T" .
+
+# --- Day Observation Instance ---
+
+observation:RF-02-2020-01-01-D a mn:DailyNoiseObservation ;
+    mn:recordedAt station:RF-02 ;
+    mn:forPeriod period:D ;
+    mn:observationDate "2020-01-01"^^xsd:date ;
+    mn:laeq 63.1 ;
+    mn:las01 70.4 ;
+    mn:las10 65.2 ;
+    mn:las50 61.8 ;
+    mn:las90 56.4 ;
+    mn:las99 53.0 .
+
+# --- Night Observation Instance ---
+
+observation:RF-02-2020-01-01-N a mn:DailyNoiseObservation ;
+    mn:recordedAt station:RF-02 ;
+    mn:forPeriod period:N ;
+    mn:observationDate "2020-01-01"^^xsd:date ;
+    mn:laeq 57.4 ;
+    mn:las01 66.8 ;
+    mn:las10 60.1 ;
+    mn:las50 53.9 ;
+    mn:las90 48.7 ;
+    mn:las99 45.2 .
+
+# --- Terrace Instance ---
+
+terrace:37 a mn:Terrace ;
+    rdfs:label "Terrace 37"@en ;
+    mn:terraceId 37 ;
+    mn:hasDistrict district:18 ;
+    mn:hasNeighbourhood neighbourhood:1801 ;
+    mn:latitude 40.3851 ;
+    mn:longitude -3.6274 .
+
+district:18 a mn:District ;
+    rdfs:label "Villa de Vallecas"@en .
+
+neighbourhood:1801 a mn:Neighbourhood ;
+    rdfs:label "Casco Histórico de Vallecas"@en .
