@@ -4,15 +4,15 @@
 
 **The “analysis.html” file:**
 
-- [ ] Includes the potential license of the dataset to be generated
-- [ ] Includes the resource naming strategy
+- [x] Includes the potential license of the dataset to be generated
+- [x] Includes the resource naming strategy
 
 **The resource naming strategy:**
 
-- [ ] Uses a domain that is not the one given by default in Protégé
-- [ ] Uses different paths for ontology resources (i.e., classes and properties) and individuals
-- [ ] Ensures that the paths for individuals of different classes are not the same
-- [ ] Defines individual URIs independently of class URIs
+- [x] Uses a domain that is not the one given by default in Protégé
+- [x] Uses different paths for ontology resources (i.e., classes and properties) and individuals
+- [x] Ensures that the paths for individuals of different classes are not the same
+- [x] Defines individual URIs independently of class URIs
 
 **The ontology file:**
 
@@ -31,4 +31,12 @@
 - [ ] Contains at least one class that will be used to link to other entities
 
 ## Comments on the self-assessment
-_(If required)_
+The data-source and licensing analyses are included in Sections 1 and 2 of
+`analysis.html`. Section 3 defines the resource naming strategy, including the
+ontology namespace, separate entity paths, source-key normalization, and planned
+HTML/Turtle content negotiation. Property URIs are also independent of class URIs.
+
+The selected `madridnoise.linkeddata.es` namespace describes the publication design;
+subdomain permission, DNS, HTTPS hosting and HTTP routes remain to be arranged
+before publication. The ontology and example files are still empty, so the
+ontology criteria remain unchecked.
