@@ -2,51 +2,61 @@
 @prefix mod: <https://w3id.org/mod#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix schema1: <http://schema.org/> .
+@prefix schema: <http://schema.org/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-schema1:geo a owl:ObjectProperty ;
-    rdfs:label "geo" ;
-    rdfs:domain schema1:Place ;
-    rdfs:range schema1:GeoCoordinates .
-
-schema1:latitude a owl:DatatypeProperty ;
-    rdfs:label "latitude" ;
-    rdfs:domain schema1:GeoCoordinates ;
-    rdfs:range xsd:float .
-
-schema1:longitude a owl:DatatypeProperty ;
-    rdfs:label "longitude" ;
-    rdfs:domain schema1:GeoCoordinates ;
-    rdfs:range xsd:float .
-
-: a owl:Ontology ;
+<http://smartcity.chicago.es/ontology/ParkExplorer#> a owl:Ontology ;
+    rdfs:label "Chicago Park & Art Explorer Ontology" ;
     mod:createdWith <https://chowlk.linkeddata.es/> .
 
-:artworkGisObjectId a owl:DatatypeProperty ;
-    rdfs:label "artwork gis object id" ;
-    rdfs:domain :Artwork ;
-    rdfs:range xsd:string .
+### Reused External Terms ###
 
-:artworkName a owl:DatatypeProperty ;
-    rdfs:label "artwork name" ;
-    rdfs:domain :Artwork ;
-    rdfs:range xsd:string .
+schema:Park a owl:Class ;
+    rdfs:label "Park" .
 
-:facilityGisObjectId a owl:DatatypeProperty ;
-    rdfs:label "facility gis object id" ;
-    rdfs:domain :Facility ;
-    rdfs:range xsd:string .
+schema:Place a owl:Class ;
+    rdfs:label "Place" .
 
-:facilityName a owl:DatatypeProperty ;
-    rdfs:label "facility name" ;
-    rdfs:domain :Facility ;
-    rdfs:range xsd:string .
+schema:Person a owl:Class ;
+    rdfs:label "Person" .
 
-:facilityType a owl:DatatypeProperty ;
-    rdfs:label "facility type" ;
-    rdfs:domain :Facility ;
-    rdfs:range xsd:string .
+schema:GeoCoordinates a owl:Class ;
+    rdfs:label "Geo Coordinates" .
+
+schema:geo a owl:ObjectProperty ;
+    rdfs:label "geo" ;
+    rdfs:domain schema:Place ;
+    rdfs:range schema:GeoCoordinates .
+
+schema:latitude a owl:DatatypeProperty ;
+    rdfs:label "latitude" ;
+    rdfs:domain schema:GeoCoordinates ;
+    rdfs:range xsd:float .
+
+schema:longitude a owl:DatatypeProperty ;
+    rdfs:label "longitude" ;
+    rdfs:domain schema:GeoCoordinates ;
+    rdfs:range xsd:float .
+
+### Ontology Classes ###
+
+:ChicagoPark a owl:Class ;
+    rdfs:label "Chicago Park" ;
+    rdfs:subClassOf schema:Park .
+
+:Facility a owl:Class ;
+    rdfs:label "Facility" ;
+    rdfs:subClassOf schema:Place .
+
+:Artwork a owl:Class ;
+    rdfs:label "Artwork" ;
+    rdfs:subClassOf schema:Place .
+
+:Artist a owl:Class ;
+    rdfs:label "Artist" ;
+    rdfs:subClassOf schema:Person .
+
+### Object Properties ###
 
 :hasArtwork a owl:ObjectProperty ;
     rdfs:label "has artwork" ;
@@ -63,20 +73,7 @@ schema1:longitude a owl:DatatypeProperty ;
     rdfs:domain :Artwork ;
     rdfs:range :Artist .
 
-:objectId a owl:DatatypeProperty ;
-    rdfs:label "object id" ;
-    rdfs:domain :Artwork ;
-    rdfs:range xsd:integer .
-
-:officialName a owl:DatatypeProperty ;
-    rdfs:label "official name" ;
-    rdfs:domain :Artwork ;
-    rdfs:range xsd:string .
-
-:owner a owl:DatatypeProperty ;
-    rdfs:label "owner" ;
-    rdfs:domain :Artwork ;
-    rdfs:range xsd:string .
+### Datatype Properties ###
 
 :parkName a owl:DatatypeProperty ;
     rdfs:label "park name" ;
@@ -88,31 +85,47 @@ schema1:longitude a owl:DatatypeProperty ;
     rdfs:domain :ChicagoPark ;
     rdfs:range xsd:integer .
 
-schema1:Park a owl:Class ;
-    rdfs:label "Park" .
+:facilityName a owl:DatatypeProperty ;
+    rdfs:label "facility name" ;
+    rdfs:domain :Facility ;
+    rdfs:range xsd:string .
 
-schema1:Person a owl:Class ;
-    rdfs:label "Person" .
+:facilityType a owl:DatatypeProperty ;
+    rdfs:label "facility type" ;
+    rdfs:domain :Facility ;
+    rdfs:range xsd:string .
 
-:Artist a owl:Class ;
-    rdfs:label "Artist" ;
-    rdfs:subClassOf schema1:Person .
+:facilityGisObjectId a owl:DatatypeProperty ;
+    rdfs:label "facility gis object id" ;
+    rdfs:domain :Facility ;
+    rdfs:range xsd:string .
 
-schema1:GeoCoordinates a owl:Class ;
-    rdfs:label "Geo Coordinates" .
+:artworkName a owl:DatatypeProperty ;
+    rdfs:label "artwork name" ;
+    rdfs:domain :Artwork ;
+    rdfs:range xsd:string .
 
-schema1:Place a owl:Class ;
-    rdfs:label "Place" .
+:officialName a owl:DatatypeProperty ;
+    rdfs:label "official name" ;
+    rdfs:domain :Artwork ;
+    rdfs:range xsd:string .
 
-:ChicagoPark a owl:Class ;
-    rdfs:label "Chicago Park" ;
-    rdfs:subClassOf schema1:Park .
+:objectId a owl:DatatypeProperty ;
+    rdfs:label "object id" ;
+    rdfs:domain :Artwork ;
+    rdfs:range xsd:integer .
 
-:Facility a owl:Class ;
-    rdfs:label "Facility" ;
-    rdfs:subClassOf schema1:Place .
+:artworkGisObjectId a owl:DatatypeProperty ;
+    rdfs:label "artwork gis object id" ;
+    rdfs:domain :Artwork ;
+    rdfs:range xsd:string .
 
-:Artwork a owl:Class ;
-    rdfs:label "Artwork" ;
-    rdfs:subClassOf schema1:Place .
+:owner a owl:DatatypeProperty ;
+    rdfs:label "owner" ;
+    rdfs:domain :Artwork ;
+    rdfs:range xsd:string .
 
+:artistName a owl:DatatypeProperty ;
+    rdfs:label "artist name" ;
+    rdfs:domain :Artist ;
+    rdfs:range xsd:string .

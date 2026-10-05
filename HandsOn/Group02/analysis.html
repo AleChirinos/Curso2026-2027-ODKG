@@ -23,9 +23,9 @@
     <h1>Dataset & Licensing Analysis</h1>
 
     <h2>1. Dataset Analysis</h2>
-    <p>We analyzed two datasets from the Chicago Data Portal: <strong>CPD_Facilities</strong> and <strong>CPD_Park_Art</strong>. Below are the key findings regarding their schema, quantities and value ranges.</p>
+    <p>We analyzed two datasets from the Chicago Data Portal: <strong>CPD_Facilities</strong> and <strong>CPD_Park_Art</strong>.</p>
 
-    <h3>1.1. Chicago Park District Facilities Dataset</h3>
+    <h3>1.1. Facilities Dataset</h3>
     <p>Each row is one facility (a playground, a tennis court, a gymnasium, etc.) located in a park.</p>
     <ul>
         <li><strong>Quantities:</strong> 4,467 rows and 9 columns.</li>
@@ -115,7 +115,7 @@
         </tbody>
     </table>
 
-    <h3>1.2. Chicago Park District Park Art Dataset</h3>
+    <h3>1.2. Park Art Dataset</h3>
     <p>Each row is one public artwork (sculpture, mural, fountain, memorial, etc.) located in a park.</p>
     <ul>
         <li><strong>Quantities:</strong> 346 rows and 11 columns.</li>
@@ -230,95 +230,79 @@
         <li><strong>Proposed License:</strong> Because the source data is Public Domain, we will publish the generated RDF datasets under a <strong>Creative Commons Attribution 4.0 International (CC BY 4.0)</strong> license. This satisfies the requirement to credit the City of Chicago while allowing the data to be freely shared, linked, and adapted.</li>
     </ul>
 
-     <h2>3. Resource Naming Strategy</h2>
-    <p>This section defines how URIs are built for the ontology (<code>ontology.ttl</code>) and for the data generated from the two datasets, following the classes and properties defined in the ontology.</p>
-
-    <h3>3.1. Domain</h3>
+    <h2>3. Resource Naming Strategy</h2>
     <ul>
-        <li><strong>Base Domain:</strong> <code>http://smartcity.chicago.es</code>. It is assumed to be a domain owned and controlled by the project, so the URIs can be kept stable and dereferenceable over time.</li>
-        <li>The domain is split into two separate paths: one for the ontology (the vocabulary) and one for the data (the instances).</li>
+        <li><strong>Hash URIs</strong> for ontological terms, <strong>slash URIs</strong> for data individuals.</li>
+        <li><strong>Ontological terms path:</strong> <code>http://smartcity.chicago.es/ontology/ParkExplorer#</code></li>
+        <li><strong>Individuals path:</strong> <code>http://smartcity.chicago.es/resource/</code></li>
     </ul>
 
-    <h3>3.2. URI Form: Hash vs. Slash</h3>
-    <ul>
-        <li><strong>Ontology: hash URIs.</strong> The ontology is small and is published as a single document, so all its terms share one base URI and are distinguished by a fragment (<code>#Artwork</code>, <code>#hasFacility</code>). Retrieving the ontology document returns every term at once.</li>
-        <li><strong>Data: slash URIs.</strong> The dataset contains thousands of resources (555 parks, 4,466 facilities, 346 artworks and their artists and coordinates). Slash URIs allow each resource to be requested and described individually, without downloading the whole dataset.</li>
-    </ul>
-
-    <h3>3.3. Ontology URIs</h3>
-    <ul>
-        <li><strong>Ontology IRI:</strong> <code>http://smartcity.chicago.es/ontology/ParkExplorer#</code></li>        <li><strong>Term namespace:</strong> <code>http://smartcity.chicago.es/ontology/ParkExplorer#</code> (prefix <code>:</code> in the Turtle files).</li>
-        <li><strong>Classes:</strong> UpperCamelCase, singular nouns: <code>:ChicagoPark</code>, <code>:Facility</code>, <code>:Artwork</code>, <code>:Artist</code>.</li>
-        <li><strong>Object properties:</strong> lowerCamelCase, verb phrases that read from domain to range: <code>:hasFacility</code>, <code>:hasArtwork</code>, <code>:madeBy</code>.</li>
-        <li><strong>Datatype properties:</strong> lowerCamelCase nouns: <code>:parkName</code>, <code>:parkNumber</code>, <code>:facilityName</code>, <code>:facilityType</code>, <code>:facilityGisObjectId</code>, <code>:artworkName</code>, <code>:officialName</code>, <code>:objectId</code>, <code>:artworkGisObjectId</code>, <code>:owner</code>.</li>
-        <li>Every term has an English <code>rdfs:label</code>.</li>
-    </ul>
-
-    <h3>3.4. Reused Vocabulary</h3>
-    <p>Terms reused from other vocabularies keep their original URIs; only new terms are created in the ParkExplorer namespace. The ontology reuses the following terms from schema.org (<code>http://schema.org/</code>, prefix <code>schema:</code>):</p>
-    <ul>
-        <li><strong>Classes:</strong> <code>schema:Park</code> (superclass of <code>:ChicagoPark</code>), <code>schema:Person</code> (superclass of <code>:Artist</code>), <code>schema:Place</code> (superclass of <code>:Facility</code> and <code>:Artwork</code>) and <code>schema:GeoCoordinates</code>.</li>
-        <li><strong>Properties:</strong> <code>schema:geo</code>, <code>schema:latitude</code> and <code>schema:longitude</code>.</li>
-    </ul>
-
-    <h3>3.5. Data (Instance) URIs</h3>
-    <p>All instance URIs follow the pattern <code>http://smartcity.chicago.es/resource/{Entity}/{identifier}</code>, where <code>{Entity}</code> is a fixed, capitalised path segment for each class and <code>{identifier}</code> is taken from the source data.</p>
+    <h3>3.1. URI Component Breakdown</h3>
+    <p>Following the structural patterns defined in the methodology, the URIs are composed as follows:</p>
     <table>
-        <tr>
-            <th>Ontology Class</th>
-            <th>URI Pattern</th>
-            <th>Identifier Source</th>
-            <th>Example</th>
-        </tr>
-        <tr>
-            <td><code>:ChicagoPark</code></td>
-            <td><code>/resource/Park/{PARK_NO}</code></td>
-            <td><code>PARK_NO</code> (shared by both datasets, so the same park gets the same URI from either source)</td>
-            <td><code>.../resource/Park/165</code></td>
-        </tr>
-        <tr>
-            <td><code>:Facility</code></td>
-            <td><code>/resource/Facility/{OBJECTID_1}</code></td>
-            <td><code>OBJECTID_1</code> of the Facilities dataset</td>
-            <td><code>.../resource/Facility/2494</code></td>
-        </tr>
-        <tr>
-            <td><code>:Artwork</code></td>
-            <td><code>/resource/Artwork/{OBJECTID}</code></td>
-            <td><code>OBJECTID</code> of the Park Art dataset</td>
-            <td><code>.../resource/Artwork/1</code></td>
-        </tr>
-        <tr>
-            <td><code>:Artist</code></td>
-            <td><code>/resource/Artist/{ARTIST_NAME}</code></td>
-            <td>Artist name converted to a URI-safe slug (the source has no artist identifier)</td>
-            <td><code>.../resource/Artist/Phil_Schuster</code></td>
-        </tr>
-        <tr>
-            <td><code>schema:GeoCoordinates</code></td>
-            <td><code>/resource/GeoCoordinates/{Entity}_{identifier}</code></td>
-            <td>Entity and identifier of the facility or artwork the coordinates belong to</td>
-            <td><code>.../resource/GeoCoordinates/Artwork_1</code>, <code>.../resource/GeoCoordinates/Facility_2494</code></td>
-        </tr>
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Pattern</th>
+                <th>Example</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Class</strong></td>
+                <td><code>[ontologyName]#[className]</code></td>
+                <td><code>.../ontology/ParkExplorer#ChicagoPark</code></td>
+            </tr>
+            <tr>
+                <td><strong>Property</strong></td>
+                <td><code>[ontologyName]#[propertyName]</code></td>
+                <td><code>.../ontology/ParkExplorer#hasFacility</code></td>
+            </tr>
+            <tr>
+                <td><strong>Individual</strong></td>
+                <td><code>[className]/[identifier]</code></td>
+                <td><code>.../resource/ChicagoPark/165</code></td>
+            </tr>
+        </tbody>
     </table>
-    <p><strong>Rules applied to identifiers:</strong></p>
-    <ul>
-        <li>Numeric identifiers are used after cleaning (thousands separators removed), so they appear as plain integers.</li>
-        <li><code>:ChicagoPark</code> instances use the shorter path segment <code>Park</code>.</li>
-        <li><code>GISOBJID</code> is not used in URIs because it is missing (<code>0</code>) for some rows; it is kept as a datatype property instead.</li>
-        <li>Artist slugs are built after splitting multi-artist cells and unifying name variants, by replacing every run of characters other than letters and digits with an underscore (e.g. <code>DeStefano &amp; Partners</code> becomes <code>DeStefano_Partners</code>). Blank and "Unknown" artists do not get an Artist URI. Because these URIs are name-based, two different artists with exactly the same name would share a URI, and correcting a name would change its URI.</li>
-    </ul>
 
-    <h3>3.6. Content Negotiation</h3>
-    <ul>
-        <li><strong>Ontology:</strong> a request to <code>http://smartcity.chicago.es/ontology/ParkExplorer</code> returns the Turtle file when the client asks for RDF (<code>Accept: text/turtle</code>), and an HTML documentation page when it is opened in a browser (<code>Accept: text/html</code>).</li>
-        <li><strong>Data:</strong> instance URIs identify real-world things (a park, an artwork), not documents, so they are served with a <strong>303 See Other</strong> redirect to a document that describes them:
-            <ul>
-                <li><code>Accept: text/turtle</code> (or another RDF format) → <code>http://smartcity.chicago.es/data/{Entity}/{identifier}</code></li>
-                <li><code>Accept: text/html</code> → <code>http://smartcity.chicago.es/page/{Entity}/{identifier}</code></li>
-            </ul>
-            For example, <code>.../resource/Park/165</code> redirects to <code>.../data/Park/165</code> for an RDF client and to <code>.../page/Park/165</code> for a browser.
-        </li>
-    </ul>
+    <h3>3.2. Individual Identifier Mapping</h3>
+    <p>The <code>[identifier]</code> for each individual is derived directly from the source datasets:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Target Class</th>
+                <th>Identifier Source</th>
+                <th>Example URI</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>:ChicagoPark</code></td>
+                <td>Cleaned integer from <code>PARK_NO</code></td>
+                <td><code>.../resource/ChicagoPark/165</code></td>
+            </tr>
+            <tr>
+                <td><code>:Facility</code></td>
+                <td>Cleaned integer from <code>OBJECTID_1</code></td>
+                <td><code>.../resource/Facility/2494</code></td>
+            </tr>
+            <tr>
+                <td><code>:Artwork</code></td>
+                <td>Cleaned integer from <code>OBJECTID</code></td>
+                <td><code>.../resource/Artwork/1</code></td>
+            </tr>
+            <tr>
+                <td><code>:Artist</code></td>
+                <td>Sanitized artist name string (URI-safe)</td>
+                <td><code>.../resource/Artist/Phil_Schuster</code></td>
+            </tr>
+            <tr>
+                <td><code>schema:GeoCoordinates</code></td>
+                <td>Associated entity Class and ID</td>
+                <td><code>.../resource/GeoCoordinates/Artwork_1</code></td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>

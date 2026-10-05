@@ -27,7 +27,7 @@
 
 ### Artist: Phil Schuster ###
 <http://smartcity.chicago.es/resource/Artist/Phil_Schuster> a :Artist ;
-    schema:name "Phil Schuster" .
+    :artistName "Phil Schuster" .
 
 
 #################################################################
