@@ -6,6 +6,7 @@
 @prefix geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix vann:    <http://purl.org/vocab/vann/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
 
 #################################################################
 #    Ontology
@@ -14,7 +15,7 @@
 <https://w3id.org/barcelona-heat-relief/ontology/HeatRelief> rdf:type owl:Ontology ;
     dcterms:title "Barcelona Heat Relief Ontology"@en ;
     dcterms:description "Lightweight ontology describing climate shelters, drinking fountains and street trees of Barcelona, and the neighbourhoods and districts where they are."@en ;
-    dcterms:created "2026-10-05"^^xsd:date ;
+    dcterms:created "2026-10-05T00:00:00"^^xsd:dateTime ;
     dcterms:creator "Group 08" ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     vann:preferredNamespacePrefix "hr" ;
@@ -32,6 +33,7 @@ dcterms:creator rdf:type owl:AnnotationProperty .
 dcterms:license rdf:type owl:AnnotationProperty .
 vann:preferredNamespacePrefix rdf:type owl:AnnotationProperty .
 vann:preferredNamespaceUri rdf:type owl:AnnotationProperty .
+skos:broadMatch rdf:type owl:AnnotationProperty .
 
 #################################################################
 #    Classes

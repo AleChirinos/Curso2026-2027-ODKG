@@ -30,9 +30,16 @@
 - [x] Does not define multiple domains or multiple ranges in properties
 - [x] Contains at least one class that will be used to link to other entities
 
+**The sample instantiation file:**
+
+- [x] Uses the .ttl extension
+- [x] Is serialized in the Turtle format
+- [x] Follows the resource naming strategy
+- [x] Does not include the definition of ontology terms
+
 ## Comments on the self-assessment
 
-- The ontology was conceptualised as a diagram in the Chowlk notation (`ontology/HeatRelief-diagram.xml`), which Chowlk converts with no errors, and developed by adding English labels and comments. It was evaluated with the tools of the course guide. The OWL API profile checker, used by the OWL validator and by Protégé, reports OWL 2 DL. HermiT finds the ontology consistent, both alone and with the example. OOPS! reports only P13 (inverse relationships not explicitly declared, minor), which we accept because the application does not need inverse properties.
+- The ontology was conceptualised as a diagram in the Chowlk notation (`ontology/HeatRelief-diagram.xml`), which Chowlk converts with no errors, and developed by adding English labels and comments. The OWL API profile checker reports OWL 2 DL, for the ontology alone and together with the example. HermiT finds the ontology consistent, both alone and with the example. OOPS! reports a single pitfall, P13 (inverse relationships not explicitly declared, 5 cases, minor), which we accept because the application does not need inverse properties.
 - `hr:plantingDate` uses `xsd:dateTime` with the time 00:00:00, because `xsd:date` is not in the OWL 2 datatype map and HermiT rejects it.
 - `geo:lat` and `geo:long` are reused from the W3C Basic Geo vocabulary with their own domain, `geo:SpatialThing`, which is the superclass of `hr:UrbanElement`.
 - Links to other entities: neighbourhoods, districts and species-level taxa use `owl:sameAs` towards Wikidata; cultivars, varieties and forms use `skos:broadMatch`; shelters use `hr:isHostedBy` towards the Wikidata item of the place that hosts them (`hr:Facility`).

@@ -23,8 +23,6 @@
 [] rdf:type owl:Ontology ;
     owl:imports <https://w3id.org/barcelona-heat-relief/ontology/HeatRelief> .
 
-skos:broadMatch rdf:type owl:ObjectProperty .
-
 #################################################################
 #    Climate shelters (xarxa-refugis-climatics.csv)
 #################################################################
